@@ -32,7 +32,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *                      "normalization_context"={"groups"={"ref:read"}}
  *              },
  *              "add"={"method"="POST",
- *                      "route_name"="add"}
+ *                      "path"=""}
  *     },
  *     itemOperations={
  *              "get"={"method"="GET",
@@ -59,7 +59,7 @@ class Referentiel
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message = "le libelle est obligatoire")
-     * @Groups({"referentiel:read","referentiel:write","promo:read","getref:read","compref:read","getbpromo:read"})
+     * @Groups({"promo:read","referentiel:read","referentiel:write","promo:read","getref:read","compref:read","getbpromo:read"})
      */
     private $libelle;
 

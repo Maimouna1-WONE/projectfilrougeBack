@@ -17,6 +17,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * @ApiResource (
  *     routePrefix="/admin/groupes",
  *     normalizationContext={"groups"={"groupe:read"}},
+ *     denormalizationContext={"groups"={"groupe:write"}},
  *     attributes={
  *          "security"="is_granted('ROLE_ADMIN') or is_granted('ROLE_FORMATEUR')",
  *          "security_message"="Vous n'avez pas access à cette Ressource"
@@ -46,18 +47,19 @@ class Groupe
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups ({"promo:write","groupe:write","promo:read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups ({"groupe:read","promo:read","getbpromo:read"})
+     * @Groups ({"groupe:read","groupe:write","promo:read","getbpromo:read","promo:write"})
      */
     private $libelle;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups ({"groupe:read"})
+     * @Groups ({"groupe:read","promo:write","groupe:write"})
      */
     private $periode;
 
@@ -69,7 +71,7 @@ class Groupe
     /**
      * @ORM\ManyToMany(targetEntity=Apprenant::class, mappedBy="groupe")
      * @ApiSubresource ()
-     * @Groups ({"groupe:read","apprenant:read","promo:read","getbpromo:read"})
+     * @Groups ({"groupe:read","apprenant:read","promo:read","getbpromo:read","promo:write","groupe:write"})
      */
     private $apprenants;
 
@@ -87,7 +89,7 @@ class Groupe
 
     /**
      * @ORM\ManyToMany(targetEntity=Formateur::class, inversedBy="groupes")
-     * @Groups ({"groupe:read"})
+     * @Groups ({"groupe:read","promo:write","groupe:write"})
      */
     private $formateur;
 

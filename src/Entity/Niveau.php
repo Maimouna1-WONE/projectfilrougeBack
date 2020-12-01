@@ -13,7 +13,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
 /**
  * @ORM\Entity(repositoryClass=NiveauRepository::class)
  * @ApiResource (
- *     normalizationContext={"groups"={"niveau:read"}}
+ *     normalizationContext={"groups"={"niveau:read"}},
+ *     denormalizationContext={"groups"={"niveau:write"}}
  * )
  */
 class Niveau
@@ -22,18 +23,19 @@ class Niveau
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups ({"niveau:read","competence:read","getref:read","addniv:write","niveau:write","competence:write"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups ({"niveau:read","competence:read","getref:read","ref:read","briefget:read","getbpromo:read","addniv:write"})
+     * @Groups ({"niveau:read","competence:read","getref:read","ref:read","briefget:read","getbpromo:read","addniv:write","niveau:write","competence:write"})
      */
     private $libelle;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups ({"niveau:read","competence:read","getref:read","addniv:write"})
+     * @Groups ({"niveau:read","competence:read","getref:read","addniv:write","niveau:write","competence:write"})
      */
     private $critereEvaluation;
 
@@ -44,7 +46,7 @@ class Niveau
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups ({"niveau:read","competence:read","getref:read","briefget:read","addniv:write"})
+     * @Groups ({"niveau:read","competence:read","getref:read","briefget:read","addniv:write","niveau:write","competence:write"})
      */
     private $action;
 

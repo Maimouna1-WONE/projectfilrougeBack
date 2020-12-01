@@ -58,6 +58,7 @@ class User implements UserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups ({"promo:read","groupe:write"})
      */
     protected $id;
 
@@ -100,7 +101,7 @@ class User implements UserInterface
      *      pattern="/^[A-Z]+$/",
      *      message="Le nom est ecrit en lettre capitale"
      * )
-     * @Groups ({"user:read","user:write","profil:read","apprenant:read","formateur:read","profilssortie:read","promo:read","groupe:read","getbpromo:read"})
+     * @Groups ({"user:read","groupe:write","user:write","profil:read","apprenant:read","formateur:read","profilssortie:read","promo:read","groupe:read","getbpromo:read"})
      */
     private $nom;
 
@@ -111,7 +112,7 @@ class User implements UserInterface
      *      pattern="/^[A-Z][a-z]+$/",
      *      message="Le prenom commence par une lettre majuscule"
      * )
-     * @Groups ({"user:read","user:write","profil:read","apprenant:read","formateur:read","profilssortie:read","promo:read","groupe:read","getbpromo:read"})
+     * @Groups ({"user:read","groupe:write","user:write","profil:read","apprenant:read","formateur:read","profilssortie:read","promo:read","groupe:read","getbpromo:read"})
      */
     private $prenom;
 
@@ -122,7 +123,7 @@ class User implements UserInterface
      *     pattern="/^7[7|6|8|0][0-9]{7}$/",
      *     message="Seuls les operateurs Tigo Expresso et Orange sont permis"
      * )
-     * @Groups ({"user:read","user:write","profil:read","apprenant:read","formateur:read"})
+     * @Groups ({"user:read","groupe:write","user:write","profil:read","apprenant:read","formateur:read"})
      */
     private $telephone;
 

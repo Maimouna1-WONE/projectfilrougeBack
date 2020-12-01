@@ -17,6 +17,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * @ApiResource (
  *     routePrefix="/admin/groupetags",
  *     normalizationContext={"groups"={"groupetag:read"}},
+ *     denormalizationContext={"groups"={"groupetag:write"}},
  *     attributes={
  *          "security"="is_granted('ROLE_ADMIN')",
  *          "security_message"="Vous n'avez pas access à cette Ressource"
@@ -48,19 +49,20 @@ class GroupeTag
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups ({"groupetag:write"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups ({"groupetag:read","getgroupetag:read","tag:read"})
+     * @Groups ({"groupetag:read","getgroupetag:read","tag:read","groupetag:write"})
      */
     private $libelle;
 
     /**
      * @ORM\ManyToMany(targetEntity=Tag::class, inversedBy="groupeTags")
      * @ApiSubresource ()
-     * @Groups ({"groupetag:read","getgroupetag:read"})
+     * @Groups ({"groupetag:read","getgroupetag:read","groupetag:write"})
      */
     private $tag;
 

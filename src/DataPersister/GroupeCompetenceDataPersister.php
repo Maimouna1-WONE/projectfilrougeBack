@@ -35,6 +35,8 @@ class GroupeCompetenceDataPersister implements ContextAwareDataPersisterInterfac
      */
     public function persist($data, array $context = [])
     {
+        $this->_entityManager->persist($data);
+        $this->_entityManager->flush();
     }
 
     /**

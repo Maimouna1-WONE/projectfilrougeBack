@@ -218,15 +218,20 @@ class PromoController extends AbstractController
      *     name="attenteOne",
      *     methods={"GET"},
      *     defaults={
-     *          "__controller"="App\Controller\PromoController::attenteOne",
+     *          "__controller"="App\Controller\PromoController::attenteforOne",
      *          "__api_resource_class"=Promo::class,
      *          "__api_collection_operation_name"="attenteOne"
      *     }
      * )
+     * @param int $val
+     * @return JsonResponse
      */
-    public function attenteOne()
+    public function attenteforOne(int $val)
     {
-        $sortie=$this->repoPromo->attenteOne();
+        dd("ok");
+        $value=$this->repo->find($val);
+        dd($val);
+        $sortie=$this->repoPromo->attenteOne($value);
         return $this->json($sortie,Response::HTTP_OK);
     }
 }

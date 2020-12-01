@@ -33,7 +33,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *                      "path"="/{id}",
  *     "normalization_context"={"groups"={"gettag:read"}}},
  *              "update"={"method"="PUT",
- *                      "route_name"="update"},
+ *                      "path"="/{id}"},
  *                  "delete"={"method"="DELETE",
  *                          "path"="/{id}"}
  *     }
@@ -46,13 +46,14 @@ class Tag
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups ({"groupetag:write"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message = "Le libelle ne peut etre vide")
-     * @Groups ({"tag:read","groupetag:read","getgroupetag:read","briefget:read","getbpromo:read"})
+     * @Groups ({"tag:read","groupetag:read","getgroupetag:read","briefget:read","getbpromo:read","groupetag:write"})
      */
     private $libelle;
 

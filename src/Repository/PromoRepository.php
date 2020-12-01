@@ -76,7 +76,7 @@ class PromoRepository extends ServiceEntityRepository
         );
         return $query->getResult();
     }
-    public function attenteOne()
+    public function attenteOne(int $val)
     {
         $entityManager = $this->getEntityManager();
         $query = $entityManager->createQuery(
@@ -84,8 +84,9 @@ class PromoRepository extends ServiceEntityRepository
             FROM App\Entity\Apprenant a
             JOIN App\Entity\Groupe g
             JOIN App\Entity\Promo p
-            WHERE a.isConnected = false'
-        );
+            WHERE a.isConnected = false and p.id=: val'
+        )
+        ->setParameter('val',$val);
         return $query->getResult();
     }
 }

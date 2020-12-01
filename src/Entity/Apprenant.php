@@ -59,7 +59,7 @@ class Apprenant extends User
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups ({"apprenant:read"})
+     * @Groups ({"apprenant:read","groupe:write"})
      */
     private $statut;
 

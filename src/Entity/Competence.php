@@ -18,6 +18,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ApiResource(
  *     routePrefix="/admin/competences",
  *     normalizationContext={"groups"={"competence:read"}},
+ *     denormalizationContext={"groups"={"competence:write"}},
  *     attributes={
  *          "security"="is_granted('ROLE_ADMIN')",
  *          "security_message"="Vous n'avez pas access à cette Ressource"
@@ -38,8 +39,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  *                      "path"="/{id}",
  *     "security"="is_granted('ROLE_ADMIN') or is_granted('ROLE_FORMATEUR') or is_granted('ROLE_CM')",
  *          "security_message"="Vous n'avez pas access à cette operation"},
- *              "put"={"method"="PUT",
- *                      "route_name"="put"},
+ *              "put"={
+ *                      "method"="PUT",
+ *                      "path"="/{id}"},
  *              "delete"={"method"="DELETE",
  *                      "path"="/{id}"}
  *     }
@@ -52,20 +54,21 @@ class Competence
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"competence:write","competence:read","groupecompetence:read","referentiel:read","promo:read","getref:read","ref:read","compref:read","addniv:write","groupecompetence:write"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message = "le libelle est obligatoire")
-     * @Groups({"competence:read","groupecompetence:read","referentiel:read","promo:read","getref:read","ref:read","compref:read","addniv:write"})
+     * @Groups({"competence:write","competence:read","groupecompetence:read","referentiel:read","promo:read","getref:read","ref:read","compref:read","addniv:write","groupecompetence:write"})
      */
     private $libelle;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message = "met la description")
-     * @Groups({"competence:read","groupecompetence:read","referentiel:read","promo:read","getref:read","ref:read","addniv:write"})
+     * @Groups({"competence:write","competence:read","groupecompetence:read","referentiel:read","promo:read","getref:read","ref:read","addniv:write","groupecompetence:write"})
      */
     private $description;
 
@@ -83,7 +86,7 @@ class Competence
     /**
      * @ORM\OneToMany(targetEntity=Niveau::class, mappedBy="competence", cascade={"persist"})
      * @ApiSubresource ()
-     * @Groups ({"competence:read","getref:read","addniv:write"})
+     * @Groups ({"competence:write","competence:read","getref:read","addniv:write"})
      */
     private $niveau;
 

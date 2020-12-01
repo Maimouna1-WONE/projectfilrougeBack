@@ -36,15 +36,6 @@ class ProfilDataPersister implements ContextAwareDataPersisterInterface
      */
     public function persist($data, array $context = [])
     {
-        $errors = $this->validator->validate($data);
-        if (count($errors) > 0) {
-            $errorsString =$this->serializer->serialize($errors,"json");
-            return new JsonResponse( $errorsString ,Response::HTTP_BAD_REQUEST,[],true);
-        }
-        $this->_entityManager->persist($data);
-        $this->_entityManager->flush();
-        return new JsonResponse("profil ajouté avec succés",Response::HTTP_CREATED,[],true);
-
     }
 
     /**

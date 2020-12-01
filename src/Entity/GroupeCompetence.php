@@ -18,6 +18,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ApiResource (
  *     routePrefix="/admin/groupecompetences",
  *     normalizationContext={"groups"={"groupecompetence:read"}},
+ *     denormalizationContext={"groups"={"groupecompetence:write"}},
  *     attributes={
  *          "security"="is_granted('ROLE_ADMIN') or is_granted('ROLE_FORMATEUR')",
  *          "security_message"="Vous n'avez pas access à cette Ressource"
@@ -25,7 +26,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     collectionOperations={
  *              "getall"={"method"="GET",
  *                      "path"=""},
- *              "get"={"method"="GET",
+ *              "getcompe"={"method"="GET",
  *                      "path"="/competences"},
  *              "post"={"method"="POST",
  *                      "path"=""},
@@ -33,10 +34,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     itemOperations={
  *              "get"={"method"="GET",
  *                      "path"="/{id}"},
- *              "get"={"method"="GET",
+ *              "getcom"={"method"="GET",
  *                      "path"="/{id}/competences"},
  *              "update"={"method"="PUT",
- *                      "route_name"="update"},
+ *                      "path"="/{id}"},
  *     "delete"={"method"="DELETE",
  *                      "path"="/{id}"}
  *     }
@@ -49,19 +50,20 @@ class GroupeCompetence
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups ({"groupecompetence:write"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups ({"groupecompetence:read","ref:read","referentiel:read","promo:read","getref:read","compref:read"})
+     * @Groups ({"groupecompetence:read","ref:read","referentiel:read","promo:read","getref:read","compref:read","groupecompetence:write"})
      * @Assert\NotBlank(message = "Le libelle est obligatoire")
      */
     private $libelle;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups ({"groupecompetence:read","ref:read","referentiel:read","promo:read","getref:read"})
+     * @Groups ({"groupecompetence:read","ref:read","referentiel:read","promo:read","getref:read","groupecompetence:write"})
      */
     private $description;
 
@@ -73,7 +75,7 @@ class GroupeCompetence
     /**
      * @ORM\ManyToMany(targetEntity=Competence::class, inversedBy="groupeCompetences")
      * @ApiSubresource ()
-     * @Groups ({"groupecompetence:read","competence:read","referentiel:read","promo:read","getref:read","ref:read","compref:read"})
+     * @Groups ({"groupecompetence:read","competence:read","referentiel:read","promo:read","getref:read","ref:read","compref:read","groupecompetence:write"})
      * @Assert\NotBlank(message = "Donner au moins une competence")
     */
     private $competence;
