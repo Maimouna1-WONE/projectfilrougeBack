@@ -4,6 +4,7 @@ namespace App\Controller;
 use App\Entity\Brief;
 use App\Repository\BriefRepository;
 use App\Repository\FormateurRepository;
+use App\Repository\GroupeRepository;
 use App\Repository\PromoRepository;
 use App\Services\UserService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -13,6 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -23,10 +25,16 @@ class BriefController extends AbstractController
     private $validator;
     private $manager;
     private $repo;
+    private $repoform;
     private $repop;
+    private $grp;
     public function __construct(SerializerInterface $serializer,ValidatorInterface $validator,
-                                EntityManagerInterface $manager, BriefRepository $repo,PromoRepository $repop){
+                                EntityManagerInterface $manager, BriefRepository $repo,
+                                PromoRepository $repop,FormateurRepository $repoform,
+                                GroupeRepository $grp){
         $this->repo=$repo;
+        $this->grp=$grp;
+        $this->repoform=$repoform;
         $this->repop=$repop;
         $this->manager=$manager;
         $this->validator=$validator;
@@ -44,6 +52,7 @@ class BriefController extends AbstractController
     *     }
     * )
     */
+
     public function addBrief(Request $request)
     {
         //$brief = $request->request->all();
@@ -67,6 +76,7 @@ class BriefController extends AbstractController
         if ($avatar){
         fclose($avatar);
         }
+        //dd($brief);
         return $this->json($this->serializer->normalize($brief),Response::HTTP_CREATED);
     }
 
@@ -82,6 +92,7 @@ class BriefController extends AbstractController
      *     }
      * )
      */
+
     public function dupliqueBrief(int $id)
     {
         $duplique=$this->repo->find($id);
@@ -91,26 +102,166 @@ class BriefController extends AbstractController
         return $this->json($this->serializer->normalize($plus), Response::HTTP_CREATED);
     }
 
+
     /**
      * @Route(
-     *     path="/api/formateurs/promo/{id}/brief/{id1}",
-     *     name="putbr",
+     *     path="/api/formateurs/{id}/briefs/brouillon",
+     *     name="brouillon",
+     *     methods={"GET"},
+     *     defaults={
+     *          "__controller"="App\Controller\BriefController::brouillons",
+     *          "__api_resource_class"=Brief::class,
+     *          "__api_collection_operation_name"="brouillon"
+     *     }
+     * )
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function bouillons(int $id): JsonResponse
+    {
+        $ok=($this->repoform->find($id))->getId();
+        $br=$this->repo->getbrouillon($ok);
+        //dd($br);
+        return $this->json($br,Response::HTTP_OK);
+    }
+
+    /**
+     * @Route(
+     *     path="/api/formateurs/promo/{id}/briefs/{id1}",
+     *     name="brpm",
+     *     methods={"GET"},
+     *     defaults={
+     *          "__controller"="App\Controller\BriefController::getbriefpromo",
+     *          "__api_resource_class"=Brief::class,
+     *          "__api_collection_operation_name"="brpm"
+     *     }
+     * )
+     * @param int $id
+     * @param int $id1
+     * @return JsonResponse
+     * @throws ExceptionInterface
+     */
+    public function getbriefpromo(int $id, int $id1): JsonResponse
+    {
+        $ok=($this->repo->find($id))->getId();
+        $ok1=($this->repop->find($id1))->getId();
+        //dd($ok1);
+        $br=$this->repo->getBriefPromo($ok,$ok1);
+        //dd($br);
+        return $this->json($this->serializer->normalize($br),Response::HTTP_OK);
+    }
+
+    /**
+     * @Route(
+     *     path="/api/formateurs/promo/{id}/groupe/{id1}/briefs",
+     *     name="brprgr",
+     *     methods={"GET"},
+     *     defaults={
+     *          "__controller"="App\Controller\BriefController::getbriefpromogroupe",
+     *          "__api_resource_class"=Brief::class,
+     *          "__api_collection_operation_name"="brprgr"
+     *     }
+     * )
+     * @param int $id
+     * @param int $id1
+     * @return JsonResponse
+     */
+    public function getbriefpromogroupe(int $id, int $id1): JsonResponse
+    {
+        $ok=($this->repop->find($id))->getId();
+        $ok1=($this->grp->find($id1))->getId();
+        //dd($ok1);
+        $br=$this->repo->getBriefPromoGroupe($ok,$ok1);
+        dd($br);
+        return $this->json($br,Response::HTTP_OK);
+    }
+
+    /**
+     * @Route(
+     *     path="/api/formateurs/{id}/briefs/valide",
+     *     name="valide",
+     *     methods={"GET"},
+     *     defaults={
+     *          "__controller"="App\Controller\BriefController::valides",
+     *          "__api_resource_class"=Brief::class,
+     *          "__api_collection_operation_name"="brouillon"
+     *     }
+     * )
+     * @param int $id
+     * @return JsonResponse
+     * @throws ExceptionInterface
+     */
+    public function valides(int $id): JsonResponse
+    {
+        $ok=($this->repoform->find($id))->getId();
+        $br=$this->repo->getValide($ok);
+        dd($br);
+        return $this->json($this->serializer->normalize($br),Response::HTTP_OK);
+    }
+    /**
+     * @Route(
+     *     path="/api/formateurs/{id0}/promo/{id}/briefs/{id1}",
+     *     name="brpmf",
+     *     methods={"GET"},
+     *     defaults={
+     *          "__controller"="App\Controller\BriefController::getbriefpromoform",
+     *          "__api_resource_class"=Brief::class,
+     *          "__api_collection_operation_name"="brpmf"
+     *     }
+     * )
+     * @param int $id
+     * @param int $id1
+     * @return JsonResponse
+     */
+    public function getbriefpromoform(int $id0,int $id, int $id1): JsonResponse
+    {
+        $ok0=($this->repoform->find($id0))->getId();
+        $ok=($this->repo->find($id))->getId();
+        $ok1=($this->repop->find($id1))->getId();
+        //dd($ok1);
+        $br=$this->repo->getBriefPromoform($ok0,$ok,$ok1);
+        dd($br);
+        return $this->json($br,Response::HTTP_OK);
+    }
+    /**
+     * @Route(
+     *     path="/api/formateurs/promo/{id}/briefs/{id1}/assignation",
+     *     name="assigne",
      *     methods={"PUT"},
      *     defaults={
-     *          "__controller"="App\Controller\BriefController::cloturer",
+     *          "__controller"="App\Controller\BriefController::Asignation",
      *          "__api_resource_class"=Brief::class,
-     *          "__api_item_operation_name"="putbr"
+     *          "__api_collection_operation_name"="assigne"
      *     }
      * )
      */
-    public function cloturer(int $id1)
+    public function Asignation(int $id,int $id1)
     {
-        //$brief=$this->repo->find($id1);
-        //$brief->setStatut("brouillon");
-        //$this->manager->persist($brief);
-        //$this->manager->flush();
-        //return $this->json("Brief cloturé", Response::HTTP_CREATED);
+        //dd('ok');
+        $ok=($this->repo->find($id));
+        $ok1=($this->repop->find($id1));
+        foreach ($ok->getBriefMaPromos() as $briefMaPromo)
+        {
+            if ($briefMaPromo->getBrief()->getId() === $ok->getId() && $briefMaPromo->getPromo()->getId() === $ok1->getId())
+            {
+                $grp=$briefMaPromo->getPromo()->getGroupes();
+                foreach ($grp as $groupe)
+                {
+                    if ($groupe->getType() === "principal")
+                    {
+                        $app=$groupe->getApprenants();
+                        foreach ($app as $apprenant)
+                        {
+                            $apprenant->setBriefApprenant($briefMaPromo->getBriefApprenant());
+                        }
+                    }
+                    if ($groupe->getType() === "secondaire")
+                    {
+                        dd('secondaire');
+                    }
+                }
+            }
+        }
     }
-
 
 }

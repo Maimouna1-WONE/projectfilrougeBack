@@ -11,7 +11,25 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=LivrableAttenduRepository::class)
- * @ApiResource ()
+ * @ApiResource (
+ *     collectionOperations={
+ *              "posturl"={
+ *            "method"="POST",
+ *             "route_name"="posturl",
+ *          "security"="is_granted('ROLE_ADMIN') or is_granted('ROLE_FORMATEUR')",
+ *           "security_message"="Vous n'avez pas access à cette operation",
+ *          "normalization_context"={"groups"={"posturl:read"}}
+ *               }
+ *     },itemOperations={
+ *        "deleteurl"={
+ *            "method"="DELETE",
+ *             "route_name"="deleteurl",
+ *          "security"="is_granted('ROLE_ADMIN') or is_granted('ROLE_FORMATEUR')",
+ *           "security_message"="Vous n'avez pas access à cette operation",
+ *          "normalization_context"={"groups"={"deleteurl:read"}}
+ *               }
+ *     }
+ * )
  */
 class LivrableAttendu
 {
@@ -24,7 +42,7 @@ class LivrableAttendu
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups ({"briefget:read","getbpromo:read"})
+     * @Groups ({"briefget:read","getbpromo:read","posturl:read"})
      */
     private $libelle;
 
@@ -40,6 +58,7 @@ class LivrableAttendu
 
     /**
      * @ORM\ManyToMany(targetEntity=Brief::class, mappedBy="livrableattendu")
+     * @Groups ({"posturl:read"})
      */
     private $briefs;
 

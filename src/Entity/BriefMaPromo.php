@@ -26,12 +26,13 @@ class BriefMaPromo
     /**
      * @ORM\ManyToOne(targetEntity=Brief::class, inversedBy="briefMaPromos")
      * @ApiSubresource ()
-     * @Groups ({"bripro:read"})
+     * @Groups ({"bripro:read","partielget:read"})
      */
     private $brief;
 
     /**
      * @ORM\ManyToOne(targetEntity=Promo::class, inversedBy="briefMaPromos")
+     * @Groups ({"partielget:read"})
      */
     private $promo;
 

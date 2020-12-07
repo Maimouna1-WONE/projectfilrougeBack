@@ -47,4 +47,19 @@ class ReferentielRepository extends ServiceEntityRepository
         ;
     }
     */
+
+
+    public function getgrpref(int $refval,int $grpcomval)
+    {
+        return $this->createQueryBuilder('r')
+            ->select('r, refgp')
+            ->join('r.groupeCompetence', 'refgp')
+            ->andWhere('refgp.id = :grpcomval')
+            ->andWhere('r.id = :refval')
+            ->setParameter('grpcomval', $grpcomval)
+            ->setParameter('refval', $refval)
+            ->getQuery()
+            ->getResult()
+            ;
+    }
 }

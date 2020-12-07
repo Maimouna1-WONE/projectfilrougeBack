@@ -47,4 +47,35 @@ class ProfilSortieRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function getSortie(int $promoval)
+    {
+        return $this->createQueryBuilder('ps')
+            ->select('ps,a,g')
+            ->join('ps.apprenants', 'a')
+            ->join('a.groupe', 'g')
+            ->andWhere('g.promotion = :promoval')
+            ->andWhere("g.type = 'principal'")
+            ->setParameter('promoval', $promoval)
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+
+    public function getProPro(int $promoval,int $profilsorval)
+    {
+        return $this->createQueryBuilder('ps')
+            ->select('ps,a,g,p')
+            ->join('ps.apprenants', 'a')
+            ->join('a.groupe', 'g')
+            ->join('g.promotion', 'p')
+            ->andWhere('p.id = :promoval')
+            ->andWhere('ps.id = :profilsorval')
+            ->setParameter('profilsorval', $profilsorval)
+            ->setParameter('promoval', $promoval)
+            ->getQuery()
+            ->getResult()
+            ;
+    }
 }

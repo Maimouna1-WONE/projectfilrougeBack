@@ -32,13 +32,15 @@ use Symfony\Component\Validator\Constraints as Assert;
  *                      "normalization_context"={"groups"={"ref:read"}}
  *              },
  *              "add"={"method"="POST",
- *                      "path"=""}
+ *                      "route_name"="add"}
  *     },
  *     itemOperations={
  *              "get"={"method"="GET",
  *                      "path"="/{id}"},
  *                  "getgrcomp"={"method"="GET",
- *                      "path"="/{id}/groupecompetences/{id1}"},
+ *                      "route_name"="refgp",
+ *     "normalization_context"={"groups"={"refgrp:read"}}
+ *             },
  *              "put"={"method"="PUT",
  *                      "path"="/{id}"},
  *     "delete"={"method"="DELETE",
@@ -59,7 +61,7 @@ class Referentiel
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message = "le libelle est obligatoire")
-     * @Groups({"promo:read","referentiel:read","referentiel:write","promo:read","getref:read","compref:read","getbpromo:read"})
+     * @Groups({"refgrp:read","promo:read","referentiel:read","referentiel:write","promo:read","getref:read","compref:read","getbpromo:read"})
      */
     private $libelle;
 
@@ -71,24 +73,27 @@ class Referentiel
     private $presentation;
 
     /**
-     * @ORM\ManyToMany(targetEntity=GroupeCompetence::class, inversedBy="referentiels")
+     * @ORM\ManyToMany(targetEntity=GroupeCompetence::class, inversedBy="referentiels", cascade={"persist"})
      * @ApiSubresource ()
-     * @Groups ({"ref:read","referentiel:read","promo:read","getref:read","compref:read"})
+     * @Groups ({"refgrp:read","ref:read","referentiel:read","promo:read","getref:read","compref:read","referentiel:write"})
      */
     private $groupeCompetence;
 
     /**
      * @ORM\Column(type="blob", nullable=true)
+     * @Groups ({"referentiel:write"})
      */
     private $programme;
 
     /**
      * @ORM\Column(type="string", length=255,nullable=true)
+     * @Groups ({"referentiel:write"})
      */
     private $critereEvaluation;
 
     /**
      * @ORM\Column(type="string", length=255,nullable=true)
+     * @Groups ({"referentiel:write"})
      */
     private $critereAdmission;
 
@@ -169,7 +174,12 @@ class Referentiel
 
     public function getProgramme()
     {
-        return $this->programme;
+        if($this->programme)
+        {
+            $programme_str= stream_get_contents($this->programme);
+            return base64_encode($programme_str);
+        }
+        return null;
     }
 
     public function setProgramme($programme): self

@@ -11,6 +11,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=GroupeRepository::class)
@@ -92,6 +93,17 @@ class Groupe
      * @Groups ({"groupe:read","promo:write","groupe:write"})
      */
     private $formateur;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message = "Donner le type du groupe")
+     * @Assert\Regex(
+     *     pattern="/principal|secondaire/",
+     *     message="preciser le type du groupe"
+     * )
+     * @Groups ({"groupe:read","promo:write","groupe:write"})
+     */
+    private $type;
 
 
     public function __construct()
@@ -212,6 +224,18 @@ class Groupe
     public function removeFormateur(Formateur $formateur): self
     {
         $this->formateur->removeElement($formateur);
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): self
+    {
+        $this->type = $type;
 
         return $this;
     }

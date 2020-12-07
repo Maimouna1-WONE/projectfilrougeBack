@@ -58,14 +58,14 @@ class User implements UserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups ({"promo:read","groupe:write"})
+     * @Groups ({"apprenant:read","promo:write","promo:read","groupe:write"})
      */
     protected $id;
 
     /**
      * @ORM\Column(type="string", length=180,unique=true)
      * @Assert\NotBlank(message = "Le login ne peut etre vide")
-     * @Groups ({"user:read","user:write","profil:read","apprenant:read","formateur:read"})
+     * @Groups ({"promo:write","user:read","user:write","profil:read","apprenant:read","formateur:read"})
      */
     private $login;
 
@@ -101,7 +101,8 @@ class User implements UserInterface
      *      pattern="/^[A-Z]+$/",
      *      message="Le nom est ecrit en lettre capitale"
      * )
-     * @Groups ({"user:read","groupe:write","user:write","profil:read","apprenant:read","formateur:read","profilssortie:read","promo:read","groupe:read","getbpromo:read"})
+     * @Groups ({"promo:write","user:read","groupe:write","user:write","profil:read","apprenant:read","formateur:read","profilssortie:read","promo:read","groupe:read","getbpromo:read"})
+     * @Groups ({"comm:read"})
      */
     private $nom;
 
@@ -112,7 +113,8 @@ class User implements UserInterface
      *      pattern="/^[A-Z][a-z]+$/",
      *      message="Le prenom commence par une lettre majuscule"
      * )
-     * @Groups ({"user:read","groupe:write","user:write","profil:read","apprenant:read","formateur:read","profilssortie:read","promo:read","groupe:read","getbpromo:read"})
+     * @Groups ({"promo:write","user:read","groupe:write","user:write","profil:read","apprenant:read","formateur:read","profilssortie:read","promo:read","groupe:read","getbpromo:read"})
+     * @Groups ({"comm:read"})
      */
     private $prenom;
 
@@ -123,21 +125,21 @@ class User implements UserInterface
      *     pattern="/^7[7|6|8|0][0-9]{7}$/",
      *     message="Seuls les operateurs Tigo Expresso et Orange sont permis"
      * )
-     * @Groups ({"user:read","groupe:write","user:write","profil:read","apprenant:read","formateur:read"})
+     * @Groups ({"promo:write","user:read","groupe:write","user:write","profil:read","apprenant:read","formateur:read"})
      */
     private $telephone;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message = "Donner l'adresse email")
-     * @Groups ({"user:read","user:write","profil:read","apprenant:read","formateur:read"})
+     * @Groups ({"promo:write","user:read","user:write","profil:read","apprenant:read","formateur:read"})
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message = "donner votre adresse")
-     * @Groups ({"user:read","user:write","profil:read","apprenant:read","formateur:read"})
+     * @Groups ({"promo:write","user:read","user:write","profil:read","apprenant:read","formateur:read"})
      */
     private $adresse;
 
@@ -148,7 +150,7 @@ class User implements UserInterface
      *     pattern="/F|M/",
      *     message="Mets F comme Feminin et M comme Masculin"
      * )
-     * @Groups ({"user:read","user:write","profil:read","apprenant:read"})
+     * @Groups ({"promo:write","user:read","user:write","profil:read","apprenant:read"})
      */
     private $genre;
 

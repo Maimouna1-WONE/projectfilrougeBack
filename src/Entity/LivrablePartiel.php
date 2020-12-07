@@ -13,10 +13,14 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * @ORM\Entity(repositoryClass=LivrablePartielRepository::class)
  * @ApiResource (
  *     collectionOperations={
- *          "getall"={
+ *          "getliv"={
  *              "method"="GET",
- *              "path"="/formateurs/promo/{id}/referentiel/{id1}/competences",
+ *              "route_name"="getliv",
  *              "normalization_context"={"groups"={"partielget:read"}}
+ *     },
+ *     "statis"={
+ *              "method"="GET",
+ *              "route_name"="statis"
  *     }
  *     }
  * )
@@ -33,31 +37,37 @@ class LivrablePartiel
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups ({"partielget:read"})
+     * @Groups ({"comm:read"})
      */
     private $libelle;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups ({"comm:read"})
      */
     private $delai;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups ({"comm:read"})
      */
     private $description;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups ({"comm:read"})
      */
     private $type;
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups ({"comm:read"})
      */
     private $nbrrendu;
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups ({"comm:read"})
      */
     private $nbrcorrige;
 
@@ -73,6 +83,7 @@ class LivrablePartiel
 
     /**
      * @ORM\ManyToOne(targetEntity=ApprenantLivrablePartiel::class, inversedBy="livrablepartiel")
+     * @Groups ({"partielget:read"})
      */
     private $apprenantLivrablePartiel;
 

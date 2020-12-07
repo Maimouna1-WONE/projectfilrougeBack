@@ -6,6 +6,7 @@ use App\Repository\BriefRepository;
 use App\Repository\ChatRepository;
 use App\Repository\FormateurRepository;
 use App\Repository\PromoRepository;
+use App\Repository\UserRepository;
 use App\Services\UserService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -25,10 +26,13 @@ class ChatController extends AbstractController
     private $validator;
     private $manager;
     private $repo;
+    private $repous;
     private $repop;
     public function __construct(SerializerInterface $serializer,ValidatorInterface $validator,
-                                EntityManagerInterface $manager, ChatRepository $repo,PromoRepository $repop){
+                                EntityManagerInterface $manager, ChatRepository $repo,
+                                PromoRepository $repop,UserRepository $repous){
         $this->repo=$repo;
+        $this->repous=$repous;
         $this->repop=$repop;
         $this->manager=$manager;
         $this->validator=$validator;
@@ -70,6 +74,27 @@ class ChatController extends AbstractController
             fclose($avatar);
         }
         return $this->json($this->serializer->normalize($chat),Response::HTTP_CREATED);
+    }
+
+    /**
+     * @Route(
+     *     path="/api/users/promos/{id}/apprenants/{id1}/chats",
+     *     name="getchat",
+     *     methods={"GET"},
+     *     defaults={
+     *          "__controller"="App\Controller\ChatController::getChat",
+     *          "__api_resource_class"=Chat::class,
+     *          "__api_collection_operation_name"="getchat"
+     *     }
+     * )
+     */
+    public function getChat(int $id,int $id1)
+    {
+        $ok=($this->repop->find($id))->getId();
+        $ok1=($this->repous->find($id1))->getId();
+        $com=$this->repo->getchat($ok,$ok1);
+        //dd($com);
+        return $this->json($com,Response::HTTP_OK);
     }
 
 }

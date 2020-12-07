@@ -56,14 +56,14 @@ class GroupeCompetence
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups ({"groupecompetence:read","ref:read","referentiel:read","promo:read","getref:read","compref:read","groupecompetence:write"})
+     * @Groups ({"refgrp:read","groupecompetence:read","ref:read","referentiel:read","promo:read","getref:read","compref:read","groupecompetence:write"})
      * @Assert\NotBlank(message = "Le libelle est obligatoire")
      */
     private $libelle;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups ({"groupecompetence:read","ref:read","referentiel:read","promo:read","getref:read","groupecompetence:write"})
+     * @Groups ({"refgrp:read","groupecompetence:read","ref:read","referentiel:read","promo:read","getref:read","groupecompetence:write"})
      */
     private $description;
 
@@ -75,7 +75,7 @@ class GroupeCompetence
     /**
      * @ORM\ManyToMany(targetEntity=Competence::class, inversedBy="groupeCompetences")
      * @ApiSubresource ()
-     * @Groups ({"groupecompetence:read","competence:read","referentiel:read","promo:read","getref:read","ref:read","compref:read","groupecompetence:write"})
+     * @Groups ({"refgrp:read","groupecompetence:read","competence:read","referentiel:read","promo:read","getref:read","ref:read","compref:read","groupecompetence:write"})
      * @Assert\NotBlank(message = "Donner au moins une competence")
     */
     private $competence;

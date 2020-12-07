@@ -47,5 +47,72 @@ class BriefRepository extends ServiceEntityRepository
         ;
     }
     */
+    public function getBrouillon(int $id)
+    {
+        return $this->createQueryBuilder('b')
+            ->select('b')
+            ->join('b.formateur', 'f')
+            ->andWhere('f.id = :id')
+            ->andWhere("b.statut = 'brouillon'")
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function getBriefPromo(int $id, int $id1)
+    {
+        return $this->createQueryBuilder('b')
+            ->select('b')
+            ->join('b.briefMaPromos', 'bp')
+            ->andWhere('bp.promo = :id')
+            ->andWhere('bp.brief = b.id')
+            ->andWhere('bp.brief = :id1')
+            ->setParameter('id', $id)
+            ->setParameter('id1', $id1)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function getBriefPromoGroupe(int $id, int $id1)
+    {
+        return $this->createQueryBuilder('b')
+            ->select('b')
+            ->join('b.briefMaPromos', 'bp')
+            ->join('bp.promo', 'p')
+            ->join('b.briefMonGroupe','bg')
+            ->join('bg.groupe','g')
+            ->andWhere('p.id = :id')
+            ->andWhere('g.id = :id1')
+            ->setParameter('id', $id)
+            ->setParameter('id1', $id1)
+            ->getQuery()
+            ->getResult();
+    }
+    public function getValide(int $id)
+    {
+        return $this->createQueryBuilder('b')
+            ->select('b')
+            ->join('b.formateur', 'f')
+            ->andWhere('f.id = :id')
+            ->andWhere("b.statut = 'valide'")
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getResult();
+    }
+    public function getBriefPromoform(int $id0,int $id, int $id1)
+    {
+        return $this->createQueryBuilder('b')
+            ->select('b')
+            ->join('b.briefMaPromos', 'bp')
+            ->andWhere('b.formateur = :id0')
+            ->andWhere('bp.promo = :id')
+            ->andWhere('bp.brief = b.id')
+            ->andWhere('bp.brief = :id1')
+            ->setParameter('id0', $id0)
+            ->setParameter('id', $id)
+            ->setParameter('id1', $id1)
+            ->getQuery()
+            ->getResult();
+    }
 
 }

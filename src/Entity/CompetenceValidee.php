@@ -13,7 +13,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *     collectionOperations={
  *              "comp"={
  *            "method"="GET",
- *             "path"="/apprenants/{id}/promos/{id1}/referentiels/{id2}/competences",
+ *             "route_name"="comp",
  *          "security"="is_granted('ROLE_ADMIN') or is_granted('ROLE_FORMATEUR')",
  *           "security_message"="Vous n'avez pas access à cette operation",
  *          "normalization_context"={"groups"={"apppro:read"}}
@@ -31,32 +31,34 @@ class CompetenceValidee
     private $id;
 
     /**
-     * @ORM\Column(type="blob", nullable=true)
+     * @ORM\Column(type="boolean")
      */
-    private $niveau1;
+    private $niveau1=false;
 
     /**
-     * @ORM\Column(type="blob", nullable=true)
+     * @ORM\Column(type="boolean")
      */
-    private $niveau2;
+    private $niveau2=false;
 
     /**
-     * @ORM\Column(type="blob", nullable=true)
+     * @ORM\Column(type="boolean")
      */
-    private $niveau3;
-
+    private $niveau3=false;
     /**
      * @ORM\ManyToOne(targetEntity=Apprenant::class, inversedBy="competenceValidees")
+     * @Groups ({"apppro:read"})
      */
     private $apprenant;
 
     /**
      * @ORM\ManyToOne(targetEntity=Competence::class, inversedBy="competenceValidees")
+     * @Groups ({"apppro:read"})
      */
     private $competence;
 
     /**
      * @ORM\ManyToOne(targetEntity=Referentiel::class, inversedBy="competenceValidees")
+     * @Groups ({"apppro:read"})
      */
     private $referentiel;
 
@@ -64,37 +66,36 @@ class CompetenceValidee
     {
         return $this->id;
     }
-
-    public function getNiveau1(): ?string
+    public function getNiveau1(): ?bool
     {
         return $this->niveau1;
     }
 
-    public function setNiveau1(string $niveau1): self
+    public function setNiveau1(bool $niveau1): self
     {
         $this->niveau1 = $niveau1;
 
         return $this;
     }
 
-    public function getNiveau2()
+    public function getNiveau2(): ?bool
     {
         return $this->niveau2;
     }
 
-    public function setNiveau2($niveau2): self
+    public function setNiveau2(bool $niveau2): self
     {
         $this->niveau2 = $niveau2;
 
         return $this;
     }
 
-    public function getNiveau3()
+    public function getNiveau3(): ?bool
     {
         return $this->niveau3;
     }
 
-    public function setNiveau3($niveau3): self
+    public function setNiveau3(bool $niveau3): self
     {
         $this->niveau3 = $niveau3;
 
@@ -136,4 +137,5 @@ class CompetenceValidee
 
         return $this;
     }
+
 }

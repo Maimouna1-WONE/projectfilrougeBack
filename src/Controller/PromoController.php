@@ -7,6 +7,7 @@ use App\Entity\Promo;
 use App\Repository\ApprenantRepository;
 use App\Repository\GroupeRepository;
 use App\Repository\ProfilRepository;
+use App\Repository\ProfilSortieRepository;
 use App\Repository\PromoRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -29,33 +30,20 @@ class PromoController extends AbstractController
     private $repo;
     private $repoApp;
     private $repoPromo;
+    private $profilsor;
     public function __construct(UserPasswordEncoderInterface $encoder,
                                 SerializerInterface $serializer,ValidatorInterface $validator,
-                                EntityManagerInterface $manager, ProfilRepository $repo, ApprenantRepository $repoApp,PromoRepository $repoPromo){
+                                EntityManagerInterface $manager, ProfilRepository $repo,
+                                ApprenantRepository $repoApp,PromoRepository $repoPromo,
+                                ProfilSortieRepository $profilsor){
         $this->repo=$repo;
         $this->encoder=$encoder;
         $this->manager=$manager;
         $this->validator=$validator;
         $this->serializer=$serializer;
         $this->repoApp=$repoApp;
+        $this->profilsor=$profilsor;
         $this->repoPromo=$repoPromo;
-    }
-    /**
-     * @Route(
-     *     path="/api/admin/promos/{id}/profilsorties",
-     *     name="promo_profil",
-     *     methods={"GET"},
-     *     defaults={
-     *          "__controller"="App\Controller\PromoController::showSortie",
-     *          "__api_resource_class"=Promo::class,
-     *          "__api_collection_operation_name"="promo_profil"
-     *     }
-     * )
-     */
-    public  function showSortie(PromoRepository $repo, int $id){
-        $i=($repo->find($id))->getId();
-        $sortie=$repo->getSortie($i);
-        return $this->json($sortie,Response::HTTP_OK);
     }
 
     /**
@@ -173,29 +161,6 @@ class PromoController extends AbstractController
 
     /**
      * @Route(
-     *     path="/api/admin/promos/{id}/apprenants/{id1}",
-     *     name="putgroupe",
-     *     methods={"PUT"},
-     *     defaults={
-     *          "__controller"="App\Controller\PromoController::update",
-     *          "__api_resource_class"=Promo::class,
-     *          "__api_collection_operation_name"="putgroupe"
-     *     }
-     * )
-     */
-
-    public function update(int $id1,int $id)
-    {
-        $promo=$this->repoPromo->find($id);
-        $ok=$promo->getGroupes()->getValues();
-        $app=$this->repoApp->find($id1);
-        foreach ($ok as $val){
-            dd($val);
-        }
-    }
-
-    /**
-     * @Route(
      *     path="/api/admin/promos/apprenants/attente",
      *     name="attente",
      *     methods={"GET"},
@@ -223,15 +188,57 @@ class PromoController extends AbstractController
      *          "__api_collection_operation_name"="attenteOne"
      *     }
      * )
-     * @param int $val
+     * @param int $id
      * @return JsonResponse
      */
-    public function attenteforOne(int $val)
+    public function attenteforOne(int $id)
     {
-        dd("ok");
-        $value=$this->repo->find($val);
-        dd($val);
-        $sortie=$this->repoPromo->attenteOne($value);
+        $value=$this->repo->find($id);
+        $ok=$value->getId();
+        $sortie=$this->repoPromo->attenteOne($ok);
         return $this->json($sortie,Response::HTTP_OK);
     }
+
+    /**
+     * @Route(
+     *     path="/api/admin/promos/principal",
+     *     name="getprincipal",
+     *     methods={"GET"},
+     *     defaults={
+     *          "__controller"="App\Controller\PromoController::principal",
+     *          "__api_resource_class"=Promo::class,
+     *          "__api_collection_operation_name"="getprincipal"
+     *     }
+     * )
+     */
+    public function principal()
+    {
+        //dd("ok");
+        $sortie=$this->repoPromo->allprincipal();
+        return $this->json($sortie,Response::HTTP_OK);
+    }
+
+    /**
+     * @Route(
+     *     path="/api/admin/promos/{id}/principal",
+     *     name="getprincipalOne",
+     *     methods={"GET"},
+     *     defaults={
+     *          "__controller"="App\Controller\PromoController::principalOne",
+     *          "__api_resource_class"=Promo::class,
+     *          "__api_collection_operation_name"="getprincipalOne"
+     *     }
+     * )
+     */
+    public function principalOne(int $id)
+    {
+        //dd("ok");
+        $value=$this->repo->find($id);
+        $ok=$value->getId();
+        //dd($ok);
+        $sortie=$this->repoPromo->allprincipalOne($ok);
+        return $this->json($sortie,Response::HTTP_OK);
+    }
+
+
 }

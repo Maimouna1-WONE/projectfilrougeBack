@@ -29,7 +29,13 @@ use Symfony\Component\Validator\Constraints as Assert;
  *          "security_message"="Vous n'avez pas access à cette operation"
  *     },
  *              "post"={"method"="POST",
- *                      "path"=""}
+ *                      "path"=""},"promo_profil"={
+ *                      "method"="GET",
+ *                      "path"="/admin/promos/{$id}/profilsorties",
+ *     "normalization_context"={"groups"={"promoprofil:read"}}
+ *     },
+ *     "propro"={"method"="GET",
+ *                      "route_name"="propro"}
  *     },
  *     itemOperations={
  *              "get"={"method"="GET",
@@ -52,6 +58,7 @@ class ProfilSortie
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups ({"profilssortie:read"})
      */
     private $id;
 

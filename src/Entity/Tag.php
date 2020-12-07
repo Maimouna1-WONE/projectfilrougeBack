@@ -18,12 +18,13 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ApiResource(
  *     routePrefix="/admin/tags",
  *     normalizationContext={"groups"={"tag:read"}},
+ *     denormalizationContext={"groups"={"tag:write"}},
  *     attributes={
  *          "security"="is_granted('ROLE_ADMIN') or is_granted('ROLE_FORMATEUR')",
  *          "security_message"="Vous n'avez pas access à cette Ressource"
  *      },
  *     collectionOperations={
- *              "get"={"method"="GET",
+ *              "getall"={"method"="GET",
  *                      "path"=""},
  *              "post"={"method"="POST",
  *                      "path"=""}
@@ -53,7 +54,7 @@ class Tag
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message = "Le libelle ne peut etre vide")
-     * @Groups ({"tag:read","groupetag:read","getgroupetag:read","briefget:read","getbpromo:read","groupetag:write"})
+     * @Groups ({"tag:read","groupetag:read","getgroupetag:read","briefget:read","getbpromo:read","tag:write","gettag:read"})
      */
     private $libelle;
 

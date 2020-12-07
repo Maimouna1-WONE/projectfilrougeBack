@@ -47,4 +47,21 @@ class CompetenceValideeRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function getcomp(int $id, int $id1, int $id2)
+    {
+        return $this->createQueryBuilder('c')
+            ->select('c')
+            ->join('c.apprenant', 'a')
+            ->join('c.referentiel', 'r')
+            ->join('r.promos', 'p')
+            ->andWhere('a.id = :id')
+            ->andWhere('p.id = :id1')
+            ->andWhere('r.id = :id2')
+            ->setParameter('id', $id)
+            ->setParameter('id1', $id1)
+            ->setParameter('id2', $id2)
+            ->getQuery()
+            ->getResult();
+    }
 }

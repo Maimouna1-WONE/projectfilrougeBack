@@ -36,6 +36,8 @@ class GroupeTagDataPersister implements ContextAwareDataPersisterInterface
      */
     public function persist($data, array $context = [])
     {
+        $this->_entityManager->persist($data);
+        $this->_entityManager->flush();
     }
 
     /**
@@ -44,6 +46,11 @@ class GroupeTagDataPersister implements ContextAwareDataPersisterInterface
     public function remove($data, array $context = [])
     {
         $data->setArchive(1);
+        $groupes=$data->getTag();
+        foreach ($groupes as $groupe)
+        {
+            $groupe->removeGroupeTag($data);
+        }
         $this->_entityManager->persist($data);
         $this->_entityManager->flush();
     }

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiSubresource;
 use App\Repository\BriefRepository;
@@ -9,11 +10,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=BriefRepository::class)
  * @ApiResource (
+ *
  *     collectionOperations={
  *     "getbriefalll"={
  *              "method"="GET",
@@ -27,21 +30,38 @@ use Symfony\Component\Validator\Constraints as Assert;
  *               "path"="/formateurs/briefs",
  *                 "route_name"="postbrief",
  *                "security"="is_granted('ROLE_FORMATEUR') or is_granted('ROLE_ADMIN')",
- *          "security_message"="Vous n'avez pas access à cette operation"
+ *          "security_message"="Vous n'avez pas access à cette operation",
+ *          "denormalization_context"={"groups"={"postbrief:write"}}
  *     },
  *     "duplique"={
- *                      "method"="POST",
+ *                   "method"="POST",
  *                      "route_name"="duplique",
  *     "security"="is_granted('ROLE_FORMATEUR') or is_granted('ROLE_ADMIN')",
  *          "security_message"="Vous n'avez pas access à cette operation"
  *                   },
- *     "promogrpbr"={
+ *     "brprgr"={
  *             "method"="GET",
- *             "path"="/formateurs/promo/{id}/groupe/{id1}/briefs",
+ *             "route_name"="brprgr",
  *             "security"="is_granted('ROLE_FORMATEUR') or is_granted('ROLE_ADMIN')",
  *             "security_message"="Vous n'avez pas access à cette operation",
  *             "normalization_context"={"groups"={"prgrpbr:read"}}
- *              }
+ *              },
+ *     "brouillon"={
+ *             "method"="GET",
+ *             "route_name"="brouillon",
+ *             "security"="is_granted('ROLE_FORMATEUR') or is_granted('ROLE_ADMIN')",
+ *             "security_message"="Vous n'avez pas access à cette operation"
+ *              },
+ *     "valide"={
+ *             "method"="GET",
+ *             "route_name"="valide",
+ *             "security"="is_granted('ROLE_FORMATEUR') or is_granted('ROLE_ADMIN')",
+ *             "security_message"="Vous n'avez pas access à cette operation"
+ *              },
+ *     "brpm"={"method"="GET",
+ *              "route_name"="brpm",
+ *     "normalization_context"={"groups"={"brpm:read"}}
+ *                }
  *     },
  *     itemOperations={
  *               "deletebr"={
@@ -50,7 +70,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  *                   },
  *              "putbr"={
  *                      "method"="PUT",
- *                      "route_name"="putbr"
+ *                      "path"="/formateurs/promo/{id}/briefs/{id1}"
+ *                   },"assigne"={
+ *                      "method"="PUT",
+ *                      "route_name"="assigne"
  *                   },
  *     "getone"={
  *                "method"="GET",
@@ -68,60 +91,62 @@ class Brief
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups ({"brpm:read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups ({"briefget:read","getbpromo:read","bripro:read","prgrpbr:read","getonebrief:read"})
+     * @Groups ({"postbrief:write","briefget:read","getbpromo:read","bripro:read","prgrpbr:read","getonebrief:read"})
      * @Assert\NotBlank(message = "Donner la langue")
      */
     private $langue;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups ({"briefget:read","getbpromo:read","bripro:read"})
+     * @Groups ({"postbrief:write","briefget:read","getbpromo:read","bripro:read"})
      * @Assert\NotBlank(message = "Donner le titre")
      */
     private $titre;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups ({"briefget:read","getbpromo:read","bripro:read"})
+     * @Groups ({"postbrief:write","briefget:read","getbpromo:read","bripro:read"})
      * @Assert\NotBlank(message = "Donner une description")
      */
     private $description;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups ({"briefget:read","getbpromo:read"})
+     * @Groups ({"postbrief:write","briefget:read","getbpromo:read"})
      * @Assert\NotBlank(message = "Donner le contexte")
      */
     private $contexte;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups ({"briefget:read","getbpromo:read","bripro:read"})
+     * @Groups ({"postbrief:write","briefget:read","getbpromo:read","bripro:read"})
      * @Assert\NotBlank(message = "Donner la modalité pedagogique")
      */
     private $modalitePedagogique;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups ({"briefget:read","getbpromo:read","bripro:read"})
+     * @Groups ({"postbrief:write","briefget:read","getbpromo:read","bripro:read"})
      * @Assert\NotBlank(message = "Donner une modalité d'evaluation")
      */
     private $modaliteEvaluation;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups ({"briefget:read","getbpromo:read","bripro:read"})
+     * @Groups ({"postbrief:write","briefget:read","getbpromo:read","bripro:read"})
      * @Assert\NotBlank(message = "Donner une critere de performance")
      */
     private $CriterePerformance;
 
     /**
      * @ORM\Column(type="blob",nullable=true)
+     * @Groups ({"postbrief:write"})
      */
     private $avatar;
 
@@ -178,7 +203,7 @@ class Brief
     private $archive=false;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255, name="statut")
      * @Assert\NotBlank(message = "Donner le statut")
      * @Assert\Regex(
      *     pattern="/brouillon|assigne|valide/",

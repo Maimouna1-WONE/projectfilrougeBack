@@ -45,6 +45,11 @@ class GroupeCompetenceDataPersister implements ContextAwareDataPersisterInterfac
     public function remove($data, array $context = [])
     {
         $data->setArchive(1);
+        $groupes=$data->getCompetence();
+        foreach ($groupes as $groupe)
+        {
+            $groupe->removeGroupeCompetence($data);
+        }
         $this->_entityManager->persist($data);
         $this->_entityManager->flush();
     }

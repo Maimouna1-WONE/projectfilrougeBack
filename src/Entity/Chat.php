@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     collectionOperations={
  *                 "getchat"={
  *                          "method"="GET",
- *                          "path"="/users/promos/{id}/apprenants/{id1}/chats",
+ *                          "route_name"="getchat",
  *                       "normalization_context"={"groups"={"chatapp:read"}},
  *                       "security"="is_granted('ROLE_ADMIN') or is_granted('ROLE_FORMATEUR')",
  *                      "security_message"="Vous n'avez pas access à cette operation"

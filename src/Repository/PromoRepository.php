@@ -48,45 +48,58 @@ class PromoRepository extends ServiceEntityRepository
         ;
     }
     */
-    public function getSortie(string $value)
-    {
-        $entityManager = $this->getEntityManager();
-        $query = $entityManager->createQuery(
-            'SELECT distinct ps.libelle
-            FROM App\Entity\Promo p
-            JOIN App\Entity\Groupe g
-            JOIN App\Entity\Apprenant a
-            JOIN App\Entity\ProfilSortie ps
-            WHERE g.promotion = :val
-            GROUP BY ps.libelle'
-        )
-            ->setParameter('val', $value);
-        return $query->getResult();
-    }
 
     public function attente()
     {
-        $entityManager = $this->getEntityManager();
-        $query = $entityManager->createQuery(
-            'SELECT a
-            FROM App\Entity\Apprenant a
-            JOIN App\Entity\Groupe g
-            JOIN App\Entity\Promo p
-            WHERE a.isConnected = false'
-        );
-        return $query->getResult();
+        return $this->createQueryBuilder('p')
+            ->select('p,g,a')
+            ->join('p.groupes', 'g')
+            ->join('g.apprenants', 'a')
+            ->andWhere('a.isConnected = false')
+            ->getQuery()
+            ->getResult()
+            ;
     }
+
     public function attenteOne(int $val)
     {
-        $entityManager = $this->getEntityManager();
-        $query = $entityManager->createQuery(
-            'SELECT a
-            FROM App\Entity\Apprenant a
-            JOIN App\Entity\Groupe g
-            JOIN App\Entity\Promo p
-            WHERE a.isConnected = false and p.id=: val'
-        )
-        ->setParameter('val',$val);
-        return $query->getResult();
+        return $this->createQueryBuilder('p')
+            ->select('p,g,a')
+            ->join('p.groupes', 'g')
+            ->join('g.apprenants', 'a')
+            ->andWhere('a.isConnected = false')
+            ->andWhere('p.id = :value')
+            ->andWhere('g.promotion = p.id')
+            ->setParameter('value', $val)
+            ->getQuery()
+            ->getResult()
+            ;
     }
+
+    public function allprincipal()
+    {
+        return $this->createQueryBuilder('p')
+            ->select('p,g,a')
+            ->join('p.groupes', 'g')
+            ->join('g.apprenants', 'a')
+            ->andWhere("g.type = 'principal'")
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function allprincipalOne(int $val)
+    {
+        return $this->createQueryBuilder('p')
+            ->select('p,g,a')
+            ->join('p.groupes', 'g')
+            ->join('g.apprenants', 'a')
+            ->andWhere('p.id = :value')
+            ->andWhere("g.type = 'principal'")
+            ->setParameter('value', $val)
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+
 }

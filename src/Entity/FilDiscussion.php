@@ -2,13 +2,16 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\FilDiscussionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=FilDiscussionRepository::class)
+ * @ApiResource ()
  */
 class FilDiscussion
 {
@@ -21,11 +24,12 @@ class FilDiscussion
 
     /**
      * @ORM\ManyToOne(targetEntity=ApprenantLivrablePartiel::class, inversedBy="filDiscussions")
+     * @Groups ({"comm:read"})
      */
     private $apprenantlivrablepartiel;
 
     /**
-     * @ORM\OneToMany(targetEntity=Commentaire::class, mappedBy="filDiscussion")
+     * @ORM\OneToMany(targetEntity=Commentaire::class, mappedBy="filDiscussionController")
      */
     private $commentaire;
 

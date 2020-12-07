@@ -32,9 +32,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  *                      "method"="POST",
  *                      "route_name"="promo_add"
  *                   },
- *                  "promo_profil"={
- *                      "method"="GET",
- *                      "path"="/admin/promos/{$id}/profilsorties"},
  *                  "getbriefpro"={
  *                      "method"="GET",
  *                      "path"="/formateurs/promos/{$id}/briefs/{id1}",
@@ -44,7 +41,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     },
  *                  "getprincipal"={
  *                      "method"="GET",
- *                      "path"="/admin/promos/principal"},
+ *                      "route_name"="getprincipal"},
  *                  "getbriefpromo"={
  *                      "method"="GET",
  *                      "path"="/formateurs/promos/{id}/groupes/{id1}/briefs",
@@ -60,10 +57,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *                  },
  *                 "attente"={
  *                      "method"="GET",
- *                      "route_name"="attente"},
- *                  "attenteOne"={
- *                      "method"="GET",
- *                      "route_name"="attenteOne"}
+ *                      "route_name"="attente"}
  *     },
  *     itemOperations={
  *              "get"={"method"="GET",
@@ -76,7 +70,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *                      "path"="/admin/promos/{id}/formateurs"},
  *                  "putgroupe"=
  *                      {"method"="PUT",
- *                      "route_name"="putgroupe"},
+ *                      "path"="/admin/promos/{id}/apprenants"},
  *     "getRef"={"method"="GET",
  *                      "path"="/admin/promos/{id}/referentiels"},
  *     "putpromoref"={"method"="PUT",
@@ -89,7 +83,13 @@ use Symfony\Component\Validator\Constraints as Assert;
  *              "path"="/formateurs/promos/{id}/referentiels/{id1}/competences",
  *              "normalization_context"={"groups"={"compref:read"}}},
  *     "deletePromo"={"method"="DELETE",
- *                      "path"="/admin/promos/{id}"}
+ *                      "path"="/admin/promos/{id}"},
+ *                  "attenteOne"={
+ *                      "method"="GET",
+ *                      "route_name"="attenteOne"},
+ *              "getprincipalOne"={
+ *                      "method"="GET",
+ *                      "route_name"="getprincipalOne"}
  *     }
  * )
  * @ApiFilter(BooleanFilter::class, properties={"archive"})
@@ -276,12 +276,12 @@ class Promo
         return $this;
     }
 
-    public function getDateFin(): ?string
+    public function getDateFin(): ?\DateTimeInterface
     {
         return $this->dateFin;
     }
 
-    public function setDateFin(string $dateFin): self
+    public function setDateFin(\DateTimeInterface $dateFin): self
     {
         $this->dateFin = $dateFin;
 

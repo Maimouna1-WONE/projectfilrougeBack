@@ -47,4 +47,42 @@ class LivrablePartielRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function getliv(int $id, int $id1, int $id2)
+    {
+        return $this->createQueryBuilder('l')
+            ->select('l')
+            ->join('l.birefmapromo', 'bp')
+            ->join('l.apprenantLivrablePartiel', 'al')
+            ->join('al.apprenant','a')
+            ->join('bp.promo', 'p')
+            ->join('bp.brief', 'b')
+            ->andWhere('a.id = :id')
+            ->andWhere('p.id = :id1')
+            ->andWhere('b.id = :id2')
+            ->setParameter('id', $id)
+            ->setParameter('id1', $id1)
+            ->setParameter('id2', $id2)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function getcomp(int $id, int $id1)
+    {
+        return $this->createQueryBuilder('l')
+            ->select('l,bp,p,r,g,a')
+            ->join('l.birefmapromo', 'bp')
+            ->join('bp.promo', 'p')
+            ->join('p.referentiel','r')
+            ->join('p.groupes','g')
+            ->join('g.apprenants','a')
+            ->andWhere('g.promotion = p.id')
+            ->andWhere("g.type = 'principal'")
+            ->andWhere('p.id = :id')
+            ->andWhere('r.id = :id1')
+            ->setParameter('id', $id)
+            ->setParameter('id1', $id1)
+            ->getQuery()
+            ->getResult();
+    }
 }

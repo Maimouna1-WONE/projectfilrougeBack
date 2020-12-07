@@ -47,4 +47,17 @@ class CommentaireRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function getcomm(int $id)
+    {
+        return $this->createQueryBuilder('c')
+            ->select('c')
+            ->join('c.filDiscussion', 'f')
+            ->join('f.apprenantlivrablepartiel', 'alp')
+            ->join('alp.livrablepartiel', 'lp')
+            ->andWhere('lp.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getResult();
+    }
 }

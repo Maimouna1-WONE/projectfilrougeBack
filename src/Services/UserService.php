@@ -50,7 +50,7 @@ class UserService
             $user->setProfil($this->repoProfil->findOneByLibelle("FORMATEUR"));
         }
         if ($entity==="App\Entity\Apprenant") {
-            $user->setProfil($this->repoProfil->findOneByLibelle("APPRENANT"));
+            $user->setProfil($this->repoProfil->findOneByLibelle("APPRENAijNT"));
         }
         if ($entity==="App\Entity\Cm") {
             $user->setProfil($this->repoProfil->findOneByLibelle("CM"));

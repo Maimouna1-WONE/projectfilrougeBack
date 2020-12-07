@@ -2,7 +2,9 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Core\Annotation\ApiSubresource;
 use App\Repository\ApprenantRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -65,6 +67,7 @@ class Apprenant extends User
 
     /**
      * @ORM\ManyToOne(targetEntity=ProfilSortie::class, inversedBy="apprenants")
+     * @Groups ({"apprenant:read"})
      */
     private $metier;
 
@@ -74,7 +77,7 @@ class Apprenant extends User
     private $groupe;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(name="isConnected", type="boolean", options={"default":false})
      */
     private $isConnected = false;
 

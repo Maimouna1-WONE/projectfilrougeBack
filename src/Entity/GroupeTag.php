@@ -49,7 +49,7 @@ class GroupeTag
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups ({"groupetag:write"})
+     * @Groups ({"groupetag:write","referentiel:write"})
      */
     private $id;
 
@@ -60,7 +60,7 @@ class GroupeTag
     private $libelle;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Tag::class, inversedBy="groupeTags")
+     * @ORM\ManyToMany(targetEntity=Tag::class, inversedBy="groupeTags", cascade={"persist"})
      * @ApiSubresource ()
      * @Groups ({"groupetag:read","getgroupetag:read","groupetag:write"})
      */
