@@ -55,13 +55,14 @@ class Profil
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups ({"profil:read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message = "Donner le libelle du profil")
-     * @Groups({"profil:read"})
+     * @Groups({"profil:read","user:read"})
      */
     private $libelle;
 

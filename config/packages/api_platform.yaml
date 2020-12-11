@@ -14,9 +14,6 @@ api_platform:
         max_joins: 100
         fetch_partial: true
         force_eager: false
-    collection:
-        pagination:
-            items_per_page: 2 # Default value
     formats:
         jsonld:
             mime_types: [ 'application/ld+json' ]
