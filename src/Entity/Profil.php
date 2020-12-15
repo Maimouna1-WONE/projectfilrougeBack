@@ -68,6 +68,7 @@ class Profil
 
     /**
      * @ORM\Column(name="archive", type="boolean", options={"default":false})
+     * @Groups({"profil:read"})
      */
     private $archive=false;
 

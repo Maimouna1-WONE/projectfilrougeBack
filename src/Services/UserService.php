@@ -28,39 +28,39 @@ class UserService
         $this->repo=$repo;
         $this->repoProfil=$repoProfil;
     }
-    public function addUser(Request $request,$entity)
+    public function addUser(Request $request)
     {
         $user = $request->request->all();
+        //dd($user);
         $avatar = $request->files->get("avatar");
         if ($avatar){
             $avatar = fopen($avatar->getRealPath(),"rb");
-            $user["avatar"] = $avatar;
+            //$avatar = $avatar;
         }
-        $user = $this->serializer->denormalize($user,$entity);
+        $idProfil = (int)$user["profil"];
+        unset($user["profil"]);
+        //unset($user["avatar"]);
+        $profil = $this->repoProfil->find($idProfil);
+        $entity = substr($profil->getLibelle(), 0, 1).strtolower(substr($profil->getLibelle(), 1));
+
+        $user = $this->serializer->denormalize($user,"App\Entity\\$entity");
+
+        $user->setAvatar($avatar);
+        $user->setPassword($this->encoder->encodePassword($user,$user->getPlainPassword()));
+        $user->setProfil($profil);
+        $user->setArchive(0);
+        //return $user;
+        //dd($user);
         $errors = $this->validator->validate($user);
         if (count($errors)){
-            $errors = $this->serializer->serialize($errors,"json");
-            return new JsonResponse($errors,Response::HTTP_BAD_REQUEST,[],true);
+            return $errors;
         }
-        $user->setPassword($this->encoder->encodePassword($user,$user->getPlainPassword()));
-        if ($entity==="App\Entity\Admin") {
-            $user->setProfil($this->repoProfil->findOneByLibelle("ADMIN"));
-        }
-        if ($entity==="App\Entity\Formateur") {
-            $user->setProfil($this->repoProfil->findOneByLibelle("FORMATEUR"));
-        }
-        if ($entity==="App\Entity\Apprenant") {
-            $user->setProfil($this->repoProfil->findOneByLibelle("APPRENAijNT"));
-        }
-        if ($entity==="App\Entity\Cm") {
-            $user->setProfil($this->repoProfil->findOneByLibelle("CM"));
-        }
-        $user->setArchive(1);
         $this->manager->persist($user);
         $this->manager->flush();
         if ($avatar){
             fclose($avatar);
         }
+        return $user;
     }
 
     /**

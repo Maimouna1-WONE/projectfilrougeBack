@@ -23,7 +23,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\DiscriminatorMap({"user" = "User", "apprenant" = "Apprenant", "admin" = "Admin", "formateur" = "Formateur", "cm"="Cm"})
  * @UniqueEntity(
  *     fields={"login"},
- *     message = "le login existe pris"
+ *     message = "le login existe deja"
  * )
  * @ApiResource (
  *     routePrefix="/admin/",
@@ -80,7 +80,7 @@ class User implements UserInterface
     /**
      * @ORM\ManyToOne(targetEntity=Profil::class, inversedBy="users")
      * @ApiSubresource()
-     * @Groups ({"user:read"})
+     * @Groups ({"user:read", "user:write"})
      */
     private $profil;
 

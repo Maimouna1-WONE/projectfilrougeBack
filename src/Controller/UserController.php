@@ -5,6 +5,7 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Services\UserService;
+use phpDocumentor\Reflection\Types\This;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -43,10 +44,14 @@ class UserController extends AbstractController
      *     }
      * )
      */
-    public function ajouter(Request $request,$entity="App\Entity\Admin")
+    public function ajouter(Request $request)
     {
-        $this->service->addUser($request,$entity);
-        return new JsonResponse("ajout reussie",Response::HTTP_CREATED,[],true);
+        $val = $this->service->addUser($request);
+        $status = Response::HTTP_BAD_REQUEST;
+        if ($val instanceof User){
+            $status =Response::HTTP_CREATED;
+        }
+        return $this->json("Ajout reussi",$status);
     }
 
     /**
