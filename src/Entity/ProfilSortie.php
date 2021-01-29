@@ -28,6 +28,11 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     "security"="is_granted('ROLE_ADMIN') or is_granted('ROLE_FORMATEUR') or is_granted('ROLE_CM') or is_granted('ROLE_APPRENANT')",
  *          "security_message"="Vous n'avez pas access à cette operation"
  *     },
+ *     "getall"={"method"="GET",
+ *                      "path"="",
+ *     "security"="is_granted('ROLE_ADMIN') or is_granted('ROLE_FORMATEUR') or is_granted('ROLE_CM') or is_granted('ROLE_APPRENANT')",
+ *          "security_message"="Vous n'avez pas access à cette operation"
+ *     },
  *              "post"={"method"="POST",
  *                      "path"=""},"promo_profil"={
  *                      "method"="GET",

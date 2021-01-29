@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 use App\Entity\Brief;
+use App\Entity\Formateur;
+use App\Entity\User;
 use App\Repository\BriefRepository;
 use App\Repository\FormateurRepository;
 use App\Repository\GroupeRepository;

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controller;
+use App\Entity\User;
 use App\Entity\Apprenant;
 use App\Repository\ApprenantRepository;
 use App\Repository\LivrablePartielRepository;

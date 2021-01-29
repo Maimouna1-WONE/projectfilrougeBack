@@ -48,18 +48,18 @@ class Groupe
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups ({"promo:write","groupe:write","promo:read"})
+     * @Groups ({"promo:write","groupe:write","promo:read","principal:read"})
      */
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
-     * @Groups ({"groupe:read","groupe:write","promo:read","getbpromo:read","promo:write"})
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups ({"groupe:read","groupe:write","promo:read","getbpromo:read","promo:write","principal:read"})
      */
     private $libelle;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @Groups ({"groupe:read","promo:write","groupe:write"})
      */
     private $periode;
@@ -72,7 +72,7 @@ class Groupe
     /**
      * @ORM\ManyToMany(targetEntity=Apprenant::class, mappedBy="groupe")
      * @ApiSubresource ()
-     * @Groups ({"groupe:read","apprenant:read","promo:read","getbpromo:read","promo:write","groupe:write"})
+     * @Groups ({"groupe:read","apprenant:read","promo:read","getbpromo:read","promo:write","groupe:write","principal:read","attenteOne:read"})
      */
     private $apprenants;
 
@@ -90,12 +90,12 @@ class Groupe
 
     /**
      * @ORM\ManyToMany(targetEntity=Formateur::class, inversedBy="groupes")
-     * @Groups ({"groupe:read","promo:write","groupe:write"})
+     * @Groups ({"groupe:read","promo:write","groupe:write","principal:read"})
      */
     private $formateur;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, options={"default": "principal"})
      * @Assert\NotBlank(message = "Donner le type du groupe")
      * @Assert\Regex(
      *     pattern="/principal|secondaire/",
@@ -103,7 +103,7 @@ class Groupe
      * )
      * @Groups ({"groupe:read","promo:write","groupe:write"})
      */
-    private $type;
+    private $type = "principal";
 
 
     public function __construct()

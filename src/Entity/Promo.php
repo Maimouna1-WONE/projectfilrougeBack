@@ -16,8 +16,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass=PromoRepository::class)
  * @ApiResource (
- *     normalizationContext={"groups"={"promo:read"}},
- *     denormalizationContext={"groups"={"promo:write"}},
  *     attributes={
  *          "security"="is_granted('ROLE_ADMIN')",
  *          "security_message"="Vous n'avez pas access à cette Ressource"
@@ -26,11 +24,13 @@ use Symfony\Component\Validator\Constraints as Assert;
  *              "get"={"method"="GET",
  *                      "path"="/admin/promos",
  *     "security"="is_granted('ROLE_ADMIN') or is_granted('ROLE_FORMATEUR') or is_granted('ROLE_CM') or is_granted('ROLE_APPRENANT')",
- *          "security_message"="Vous n'avez pas access à cette operation"
+ *          "security_message"="Vous n'avez pas access à cette operation",
+ *     "normalization_context"={"groups"={"promo:read"}}
  *     },
  *            "add_promo"={
  *                      "method"="POST",
- *                      "route_name"="promo_add"
+ *                      "route_name"="promo_add",
+ *     "denormalization_context"={"groups"={"promo:write"}}
  *                   },
  *                  "getbriefpro"={
  *                      "method"="GET",
@@ -41,14 +41,15 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     },
  *                  "getprincipal"={
  *                      "method"="GET",
- *                      "route_name"="getprincipal"},
+ *                      "route_name"="getprincipal"
+ *                      },
  *                  "getbriefpromo"={
  *                      "method"="GET",
  *                      "path"="/formateurs/promos/{id}/groupes/{id1}/briefs",
  *     "security"="is_granted('ROLE_ADMIN') or is_granted('ROLE_FORMATEUR')",
  *          "security_message"="Vous n'avez pas access à cette operation",
  *     "normalization_context"={"groups"={"getbpromo:read"}}
- *     },"bripro"={
+ *                     },"bripro"={
  *                      "method"="GET",
  *                      "path"="/formateurs/promos/{id}/briefs",
  *     "security"="is_granted('ROLE_ADMIN') or is_granted('ROLE_FORMATEUR')",
@@ -57,7 +58,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  *                  },
  *                 "attente"={
  *                      "method"="GET",
- *                      "route_name"="attente"}
+ *                      "route_name"="attente"
+ *     }
  *     },
  *     itemOperations={
  *              "get"={"method"="GET",
@@ -65,17 +67,19 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     "security"="is_granted('ROLE_ADMIN') or is_granted('ROLE_FORMATEUR') or is_granted('ROLE_CM')",
  *          "security_message"="Vous n'avez pas access à cette operation"},
  *     "getform"={"method"="GET",
- *                      "path"="/admin/promos/{id}/formateurs"},
+ *                      "path"="/admin/promos/{id}/formateurs",
+ *     "normalization_context"={"groups"={"getform:read"}}},
  *              "put"={"method"="PUT",
  *                      "path"="/admin/promos/{id}/formateurs"},
  *                  "putgroupe"=
  *                      {"method"="PUT",
  *                      "path"="/admin/promos/{id}/apprenants"},
  *     "getRef"={"method"="GET",
- *                      "path"="/admin/promos/{id}/referentiels"},
+ *                      "path"="/admin/promos/{id}/referentiels",
+ *                  "normalization_context"={"groups"={"getRef:read"}}},
  *     "putpromoref"={"method"="PUT",
  *                      "path"="/admin/promos/{id}/referentiels"},
- *     "getRef"={
+ *     "getAppGroupepromo"={
  *              "method"="GET",
  *               "path"="/admin/promos/{id}/groupes/{id1}/apprenants"},
  *     "getcompref"={
@@ -100,7 +104,7 @@ class Promo
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups ({"promo:write"})
+     * @Groups ({"promo:write", "promo:read","principal:read","getform:read"})
      */
     private $id;
 
@@ -112,13 +116,20 @@ class Promo
     private $libelle;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255)
      * @Groups ({"promo:write","promo:read"})
      */
     private $lieu;
 
+
+    /**
+     * @ORM\Column(type="string", length=255, options={"default":"Sonatel Academy"})
+     */
+    private $fabrique;
+
     /**
      * @ORM\Column(type="blob", nullable=true)
+     * @Groups ({"promo:read"})
      */
     private $avatar;
 
@@ -136,7 +147,7 @@ class Promo
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups ({"promo:write"})
+     * @Groups ({"promo:write","promo:read"})
      */
     private $referenceAgate;
 
@@ -160,14 +171,14 @@ class Promo
     /**
      * @ORM\ManyToMany(targetEntity=Formateur::class, mappedBy="promo")
      * @ApiSubresource ()
-     * @Groups ({"promo:write","promo:read","formateur:read"})
+     * @Groups ({"promo:write","getform:read","promo:read","formateur:read"})
      */
     private $formateurs;
 
     /**
      * @ORM\OneToMany(targetEntity=Groupe::class, mappedBy="promotion")
      * @ApiSubresource ()
-     * @Groups ({"promo:write","promo:read","groupe:read","getbpromo:read"})
+     * @Groups ({"promo:write","promo:read","groupe:read","getbpromo:read","principal:read","attenteOne:read"})
      */
     private $groupes;
 
@@ -175,7 +186,8 @@ class Promo
     /**
      * @ORM\ManyToOne(targetEntity=Referentiel::class, inversedBy="promos")
      * @ApiSubresource ()
-     * @Groups ({"promo:read","referentiel:read","compref:read","getbpromo:read"})
+     * @Groups ({"getRef:read"})
+     * @Groups ({"promo:read","referentiel:read","compref:read","getbpromo:read","principal:read","attenteOne:read"})
      */
     private $referentiel;
 
@@ -190,6 +202,7 @@ class Promo
      * @ORM\OneToMany(targetEntity=Chat::class, mappedBy="promo")
      */
     private $chats;
+
 
     public function __construct()
     {
@@ -228,9 +241,26 @@ class Promo
         return $this;
     }
 
+    public function getFabrique(): ?string
+    {
+        return $this->fabrique;
+    }
+
+    public function setFabrique(string $fabrique): self
+    {
+        $this->fabrique = $fabrique;
+
+        return $this;
+    }
+
     public function getAvatar()
     {
-        return $this->avatar;
+        if($this->avatar)
+        {
+            $avatar_str= stream_get_contents($this->avatar);
+            return base64_encode($avatar_str);
+        }
+        return null;
     }
 
     public function setAvatar($avatar): self
@@ -260,6 +290,18 @@ class Promo
     public function setDescription(string $description): self
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getReferenceAgate(): ?string
+    {
+        return $this->referenceAgate;
+    }
+
+    public function setReferenceAgate(string $referenceagate): self
+    {
+        $this->referenceAgate = $referenceagate;
 
         return $this;
     }
@@ -428,4 +470,5 @@ class Promo
 
         return $this;
     }
+
 }

@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 use App\Entity\User;
+use App\Entity\Admin;
+use App\Entity\Formateur;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Services\UserService;
@@ -71,7 +73,7 @@ class UserController extends AbstractController
      */
     public function modifier(Request $request, int $id)
     {
-        $object=$this->repo->find($id);
+        $object = $this->repo->find($id);
         $data = $this->service->UpdateUser($request, 'avatar');
         foreach ($data as $key=>$value){
             $ok="set".ucfirst($key);
@@ -89,9 +91,24 @@ class UserController extends AbstractController
         }
         $this->manager->persist($object);
         $this->manager->flush();
-
+        //dd($object);
         return new JsonResponse("modification reussie",Response::HTTP_CREATED,[],true);
     }
+    /**
+     * @Route(
+     *     path="/api/admin/users/search",
+     *     name="search",
+     *     methods={"GET"},
+     *     defaults={
+     *          "__controller"="App\Controller\UserController::search",
+     *          "__api_resource_class"=User::class,
+     *          "__api_collection_operation_name"="search"
+     *     }
+     * )
+     */
+    public function search(){
+        $user=($this->get("security.token_storage")->getToken())->getUser();
+        return $this->json($user,Response::HTTP_OK, [] ,['groups' => ['useritem:read']]);
 
-
+    }
 }

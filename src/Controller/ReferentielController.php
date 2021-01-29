@@ -48,14 +48,24 @@ class ReferentielController extends AbstractController
      public function addref(Request $request)
      {
          $ref = $request->request->all();
-         //$ref=json_decode($request->getContent(), true);
          $file = $request->files->get("programme");
          if ($file){
              $file = fopen($file->getRealPath(),"rb");
-             $ref["programme"] = $file;
          }
-         //dd($ref);
+
+         $tab= explode(',', $ref['groupeCompetence']);
+         unset($ref['groupeCompetence']);
+         foreach ($tab as $key=>$value){
+             $grp = (integer)$value;
+             unset($value);
+             $grpcomp = $this->repoGP->find($grp);
+             $tabok[]=$grpcomp;
+         }
          $refer = $this->serializer->denormalize($ref, 'App\Entity\Referentiel');
+            foreach ($tabok as $keyok=>$valueok){
+                $refer->addGroupeCompetence($valueok);
+}
+         $refer->setProgramme($file);
          $errors = $this->validator->validate($refer);
          if (count($errors)){
              $errors = $this->serializer->serialize($errors,"json");
@@ -67,7 +77,7 @@ class ReferentielController extends AbstractController
              fclose($file);
          }
          //dd($refer);
-         return $this->json($this->serializer->normalize($refer),Response::HTTP_CREATED);
+         return $this->json("Ajout reussi",Response::HTTP_CREATED);
      }
     /**
      * @Route(

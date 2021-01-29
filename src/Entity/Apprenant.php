@@ -10,6 +10,7 @@ use App\Repository\ApprenantRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
@@ -61,13 +62,13 @@ class Apprenant extends User
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups ({"apprenant:read","groupe:write"})
+     * @Groups ({"getalluser:read","apprenant:read","groupe:write","user:read","useritem:read"})
      */
     private $statut;
 
     /**
      * @ORM\ManyToOne(targetEntity=ProfilSortie::class, inversedBy="apprenants")
-     * @Groups ({"apprenant:read"})
+     * @Groups ({"getalluser:read","apprenant:read","user:read","useritem:read"})
      */
     private $metier;
 
@@ -78,6 +79,7 @@ class Apprenant extends User
 
     /**
      * @ORM\Column(name="isConnected", type="boolean", options={"default":false})
+     * @Groups ({"attenteOne:read"})
      */
     private $isConnected = false;
 
@@ -101,7 +103,7 @@ class Apprenant extends User
      */
     private $livrableAttenduApprenant;
 
-    public function __construct()
+    public function __construct(UserPasswordEncoderInterface $encoder)
     {
         $this->setNom("APPRENANT");
         $this->setGenre("M");
@@ -109,6 +111,7 @@ class Apprenant extends User
         $this->setPrenom("Apprenant");
         $this->setAdresse("apprenant");
         $this->setLogin("apprenant".rand(1,10000));
+        $this->setPassword($encoder->encodePassword($this,"pass_1234"));
         $this->groupe = new ArrayCollection();
         $this->competenceValidees = new ArrayCollection();
     }

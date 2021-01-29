@@ -62,7 +62,7 @@ class Profil
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message = "Donner le libelle du profil")
-     * @Groups({"profil:read","user:read"})
+     * @Groups({"profil:read","user:read","useritem:read","getalluser:read"})
      */
     private $libelle;
 

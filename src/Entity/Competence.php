@@ -86,7 +86,13 @@ class Competence
     /**
      * @ORM\OneToMany(targetEntity=Niveau::class, mappedBy="competence", cascade={"persist"})
      * @ApiSubresource ()
-     * @Groups ({"competence:write","competence:read","getref:read","addniv:write"})
+     * @Assert\Count(
+     *      min = 3,
+     *      max = 3,
+     *      minMessage = "You must specify at least one niveau",
+     *      maxMessage = "You cannot specify more than {{ limit }} niveaux"
+     * )
+     * @Groups ({"competence:write","competence:read","getref:read","addniv:write","groupecompetence:read"})
      */
     private $niveau;
 

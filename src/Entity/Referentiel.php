@@ -36,7 +36,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     },
  *     itemOperations={
  *              "get"={"method"="GET",
- *                      "path"="/{id}"},
+ *                      "path"="/{id}",
+ *     "normalization_context"={"groups"={"getref:read"}}
+ *     },
  *                  "getgrcomp"={"method"="GET",
  *                      "route_name"="refgp",
  *     "normalization_context"={"groups"={"refgrp:read"}}
@@ -55,45 +57,46 @@ class Referentiel
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups ({"getRef:read","referentiel:read","getref:read","promo:read","principal:read","attenteOne:read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message = "le libelle est obligatoire")
-     * @Groups({"refgrp:read","promo:read","referentiel:read","referentiel:write","promo:read","getref:read","compref:read","getbpromo:read"})
+     * @Groups({"getRef:read","refgrp:read","promo:read","referentiel:read","referentiel:write","promo:read","getref:read","compref:read","getbpromo:read","principal:read","attenteOne:read"})
      */
     private $libelle;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message = "la presentation est obligatoire")
-     * @Groups({"referentiel:read","referentiel:write","promo:read","getref:read"})
+     * @Groups({"getRef:read","referentiel:read","referentiel:write","promo:read","getref:read"})
      */
     private $presentation;
 
     /**
      * @ORM\ManyToMany(targetEntity=GroupeCompetence::class, inversedBy="referentiels", cascade={"persist"})
      * @ApiSubresource ()
-     * @Groups ({"refgrp:read","ref:read","referentiel:read","promo:read","getref:read","compref:read","referentiel:write"})
+     * @Groups ({"getRef:read","refgrp:read","ref:read","referentiel:read","promo:read","getref:read","compref:read","referentiel:write"})
      */
     private $groupeCompetence;
 
     /**
      * @ORM\Column(type="blob", nullable=true)
-     * @Groups ({"referentiel:write"})
+     * @Groups ({"getref:read","referentiel:write"})
      */
     private $programme;
 
     /**
      * @ORM\Column(type="string", length=255,nullable=true)
-     * @Groups ({"referentiel:write"})
+     * @Groups ({"getRef:read","referentiel:write","getref:read"})
      */
     private $critereEvaluation;
 
     /**
      * @ORM\Column(type="string", length=255,nullable=true)
-     * @Groups ({"referentiel:write"})
+     * @Groups ({"getRef:read","referentiel:write","getref:read"})
      */
     private $critereAdmission;
 

@@ -37,14 +37,21 @@ use Symfony\Component\Validator\Constraints as Assert;
  *                 "add_user"={
  *                      "method"="POST",
  *                      "route_name"="user_add"
- *                   },
- *               "get"
+ *                   }, "get","search"={
+ *                      "method"="GET",
+ *                      "route_name"="search"
+ *                   }
  *     },
  *     itemOperations={
- *              "get",
+ *              "getitem"={
+ *                      "method"="GET",
+ *                      "path"="/users/{id}",
+ *                      "normalization_context"={"groups"={"useritem:read"}}
+ *                },
  *              "update_user"={
  *                      "method"="PUT",
- *                      "route_name"="user_update"
+ *                      "route_name"="user_update",
+ *                      "denormalization_context"={"groups"={"upuser:write"}}
  *                },
  *              "delete"={"method"="DELETE",
  *                      "path"="/users/{id}"}
@@ -58,14 +65,14 @@ class User implements UserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups ({"user:read","apprenant:read","promo:write","promo:read","groupe:write"})
+     * @Groups ({"principal:read","getalluser:read","user:read","useritem:read","apprenant:read","promo:write","promo:read","groupe:write","profil:read"})
      */
     protected $id;
 
     /**
      * @ORM\Column(type="string", length=180,unique=true)
      * @Assert\NotBlank(message = "Le login ne peut etre vide")
-     * @Groups ({"promo:write","user:read","user:write","profil:read","apprenant:read","formateur:read"})
+     * @Groups ({"getalluser:read","upuser:write","promo:write","user:read","user:write","profil:read","apprenant:read","formateur:read","useritem:read"})
      */
     private $login;
 
@@ -74,13 +81,14 @@ class User implements UserInterface
     /**
      * @var string The hashed password
      * @ORM\Column(type="string")
+     * @Groups ({"upuser:write"})
      */
     private $password;
 
     /**
      * @ORM\ManyToOne(targetEntity=Profil::class, inversedBy="users")
      * @ApiSubresource()
-     * @Groups ({"user:read", "user:write"})
+     * @Groups ({"getalluser:read","user:read", "user:write","useritem:read"})
      */
     private $profil;
 
@@ -102,7 +110,8 @@ class User implements UserInterface
      *      message="Le nom est ecrit en lettre capitale"
      * )
      * @Groups ({"promo:write","user:read","groupe:write","user:write","profil:read","apprenant:read","formateur:read","profilssortie:read","promo:read","groupe:read","getbpromo:read"})
-     * @Groups ({"comm:read"})
+     * @Groups ({"comm:read","useritem:read"})
+     * @Groups ({"getalluser:read","upuser:write","principal:read","getform:read"})
      */
     private $nom;
 
@@ -114,7 +123,8 @@ class User implements UserInterface
      *      message="Le prenom commence par une lettre majuscule"
      * )
      * @Groups ({"promo:write","user:read","groupe:write","user:write","profil:read","apprenant:read","formateur:read","profilssortie:read","promo:read","groupe:read","getbpromo:read"})
-     * @Groups ({"comm:read"})
+     * @Groups ({"comm:read","useritem:read"})
+     * @Groups ({"getalluser:read","upuser:write","principal:read","getform:read"})
      */
     private $prenom;
 
@@ -126,6 +136,7 @@ class User implements UserInterface
      *     message="Seuls les operateurs Tigo Expresso et Orange sont permis"
      * )
      * @Groups ({"promo:write","user:read","groupe:write","user:write","profil:read","apprenant:read","formateur:read"})
+     * @Groups ({"getalluser:read","upuser:write","useritem:read"})
      */
     private $telephone;
 
@@ -133,13 +144,15 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message = "Donner l'adresse email")
      * @Groups ({"promo:write","user:read","user:write","profil:read","apprenant:read","formateur:read"})
+     * @Groups ({"getalluser:read","upuser:write","useritem:read","attenteOne:read"})
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message = "donner votre adresse")
-     * @Groups ({"promo:write","user:read","user:write","profil:read","apprenant:read","formateur:read"})
+     * @Groups ({"upuser:write","useritem:read"})
+     * @Groups ({"getalluser:read","promo:write","user:read","user:write","profil:read","apprenant:read","formateur:read"})
      */
     private $adresse;
 
@@ -150,13 +163,15 @@ class User implements UserInterface
      *     pattern="/F|M/",
      *     message="Mets F comme Feminin et M comme Masculin"
      * )
-     * @Groups ({"promo:write","user:read","user:write","profil:read","apprenant:read"})
+     * @Groups ({"upuser:write","useritem:read"})
+     * @Groups ({"getalluser:read","promo:write","user:read","user:write","profil:read","apprenant:read"})
      */
     private $genre;
 
     /**
      * @ORM\Column(type="blob", nullable=true)
-     * @Groups ({"user:write","user:read"})
+     * @Groups ({"user:write"})
+     * @Groups ({"upuser:write","useritem:read"})
      */
     private $avatar;
 

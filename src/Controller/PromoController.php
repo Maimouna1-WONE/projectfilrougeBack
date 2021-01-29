@@ -9,6 +9,7 @@ use App\Repository\GroupeRepository;
 use App\Repository\ProfilRepository;
 use App\Repository\ProfilSortieRepository;
 use App\Repository\PromoRepository;
+use App\Repository\ReferentielRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -31,11 +32,12 @@ class PromoController extends AbstractController
     private $repoApp;
     private $repoPromo;
     private $profilsor;
+    private $ref;
     public function __construct(UserPasswordEncoderInterface $encoder,
                                 SerializerInterface $serializer,ValidatorInterface $validator,
                                 EntityManagerInterface $manager, ProfilRepository $repo,
                                 ApprenantRepository $repoApp,PromoRepository $repoPromo,
-                                ProfilSortieRepository $profilsor){
+                                ProfilSortieRepository $profilsor, ReferentielRepository $ref){
         $this->repo=$repo;
         $this->encoder=$encoder;
         $this->manager=$manager;
@@ -44,6 +46,7 @@ class PromoController extends AbstractController
         $this->repoApp=$repoApp;
         $this->profilsor=$profilsor;
         $this->repoPromo=$repoPromo;
+        $this->ref = $ref;
     }
 
     /**
@@ -60,75 +63,76 @@ class PromoController extends AbstractController
      */
     public function addPromo(Request $request, \Swift_Mailer $mailer, ProfilRepository $repoProfil)
     {
-        $promo = new Promo();
-        $promo->setLibelle("Sonatel Academy1")
-            ->setLangue("Francais")
-            ->setDescription("nouvelle cohorte")
-            ->setArchive(0);
-        $groupe = new Groupe();
-        $groupe->setArchive(1)
-            ->setLibelle("principal")
-            ->setPeriode("1 semaine");
+        $promocontent = $request->request->all();
+        //$promocontent = json_decode($request->getContent(), true);
+        //dd($promocontent["apprenant"]);
+        $avatar = $request->files->get("avatar");
+        if ($avatar){
+            $avatar = fopen($avatar->getRealPath(),"rb");
+        }
+        $idRef = (int)$promocontent["referentiel"];
+        //dd($idRef);
+        unset($promocontent["referentiel"]);
+        $referentiel = $this->ref->find($idRef);
+        $promo = $this->serializer->denormalize($promocontent,"App\Entity\Promo");
+        $promo->setReferentiel($referentiel);
+        $promo->setDateDebut(new \DateTime);
+        $promo->setDateFin(\DateTime::createFromFormat('Y-m-d', $promocontent['date_fin']));
+        $promo->setLibelle($promocontent["libelle"]);
+        $promo->setLieu($promocontent["lieu"]);
+        $promo->setFabrique($promocontent["fabrique"]);
+        $promo->setDescription($promocontent["description"]);
+        $promo->setReferenceAgate($promocontent["reference_agate"]);
+        $promo->setAvatar($avatar);
+        $grp = new Groupe();
+        $grp->setPromotion($promo);
+        foreach ($promocontent["apprenant"] as $key => $value) {
+            if ($promocontent["apprenant"][$key] !== "") {
+                $app = new Apprenant($this->encoder);
+                $app->setEmail($value);
+                $app->setProfil($repoProfil->findOneByLibelle("APPRENANT"));
+                $this->manager->persist($app);
+                $grp->addApprenant($app);
+                $this->manager->persist($grp);
+            }
+        }
 
-        /*$tab=["wone.maimouna@ugb.edu.sn"];
-        for($i=0;$i<1;$i++) {
-        $apprenant = new Apprenant();
-        $apprenant->addGroupe($groupe)
-        ->setStatut("actif");
+        $doc = $request->files->get("document");
+       $file= IOFactory::identify($doc);
+       $reader= IOFactory::createReader($file);
+       $spreadsheet=$reader->load($doc);
+       $array_contenu_fichier= $spreadsheet->getActivesheet()->toArray();
+       //return $array_contenu_fichier;
+       for ($i=1, $iMax = count($array_contenu_fichier); $i< $iMax; $i++){
+            $app= new Apprenant($this->encoder);
+            $app ->setEmail($array_contenu_fichier[$i][0]);
+            $app->setProfil($repoProfil->findOneByLibelle("APPRENANT"));
+            $this->manager->persist($app);
+            $grp->addApprenant($app);
+            $this->manager->persist($grp);
+       }
+
+        $promo->addGroupe($grp);
+        $errors = $this->validator->validate($promo);
+        if (count($errors)){
+            $errors = $this->serializer->serialize($errors,"json");
+            return new JsonResponse($errors,Response::HTTP_BAD_REQUEST,[],true);
+        }
+
         $password = "pass_1234";
-        $apprenant->setLogin("mainashou".$i)
-        ->setNom("SHOU".$i)
-        ->setPrenom("Maina".$i)
-        ->setTelephone("777460900")
-        ->setGenre("F")
-        ->setAdresse("Hann")
-        ->setEmail($tab[$i])
-        ->setPassword($this->encoder->encodePassword($apprenant, $password));
-        }*/
-
-        /*$doc = $request->files->get("document");
-        $file= IOFactory::identify($doc);
-        $reader= IOFactory::createReader($file);
-        $spreadsheet=$reader->load($doc);
-        $array_contenu_fichier= $spreadsheet->getActivesheet()->toArray();
-        //dd($array_contenu_fichier);
-        $password="pass_1234";
-        for ($i=1;$i<count($array_contenu_fichier);$i++){
-        $apprenant = new Apprenant();
-        $apprenant->addGroupe($groupe)
-        ->setStatut("actif")
-        ->setLogin($array_contenu_fichier[$i][0])
-        ->setPassword($this->encoder->encodePassword($apprenant,$password))
-        ->setNom($array_contenu_fichier[$i][1])
-        ->setPrenom($array_contenu_fichier[$i][2])
-        ->setTelephone($array_contenu_fichier[$i][3])
-        ->setAdresse($array_contenu_fichier[$i][4])
-        ->setGenre($array_contenu_fichier[$i][5])
-        ->setEmail($array_contenu_fichier[$i][6]);
-        }*/
-
-        $apprenant->setProfil($repoProfil->findOneByLibelle("APPRENANT"));
-        $groupe->addApprenant($apprenant);
-
-        $this->manager->persist($apprenant);
-
         $message = (new\Swift_Message)
             ->setSubject('Orange Digital Center, SONATEL ACADEMY')
             ->setFrom('mainashou@gmail.com')
-            ->setTo($apprenant->getEmail())
-            ->setBody("Bienvenue cher apprenant vous avez intégré la nouvelle promotion de la première école de codage gratuite du Sénégal, veuillez utiliser ce login: " . $apprenant->getLogin() . " et ce password : " . $password . " par defaut pour se connecter");
+            ->setTo($app->getEmail())
+            ->setBody("Bienvenue cher apprenant vous avez intégré la nouvelle promotion de la première école de codage gratuite du Sénégal, veuillez utiliser ce login: " . $app->getLogin() . " et ce password : " . $password . " par defaut pour se connecter");
         $mailer->send($message);
 
-        $promo->addGroupe($groupe);
-        $errors = $this->validator->validate($promo);
-        if (count($errors)) {
-            $errors = $this->serializer->serialize($errors, "json");
-            return new JsonResponse($errors, Response::HTTP_BAD_REQUEST, [], true);
-        }
-        $this->manager->persist($groupe);
         $this->manager->persist($promo);
         $this->manager->flush();
-        return $this->json($this->serializer->normalize($promo), Response::HTTP_CREATED);
+        if ($avatar){
+            fclose($avatar);
+        }
+        return $this->json("ajout reussi", Response::HTTP_CREATED);
     }
 
     /**
@@ -144,19 +148,16 @@ class PromoController extends AbstractController
      * )
      */
 
-    public function modifie(GroupeRepository $repo,int $id1, PromoRepository $rep, int $id)
+    public function modifie(int $id1, int $id)
     {
-        $groupe=$repo->find($id1);
-        $promo=$rep->find($id);
-        $groupes=$promo->getGroupes();
+        $promo=$this->repoPromo->promogroupe($id, $id1);
+        $groupes=$promo[0]->getGroupes();
         foreach ($groupes as $val){
-            if ($val===$groupe) {
                 $val->setArchive(1);
-            }
         }
-        $this->manager->persist($promo);
+        $this->manager->persist($promo[0]);
         $this->manager->flush();
-        return $this->json($this->serializer->normalize($promo), Response::HTTP_CREATED);
+        return $this->json('Statut change', Response::HTTP_CREATED);
     }
 
     /**
@@ -174,7 +175,7 @@ class PromoController extends AbstractController
     public function attentePro()
     {
         $sortie=$this->repoPromo->attente();
-        return $this->json($sortie,Response::HTTP_OK);
+        return $this->json($sortie,Response::HTTP_OK, [] ,['groups' => ['attenteOne:read']]);
     }
 
     /**
@@ -196,7 +197,7 @@ class PromoController extends AbstractController
         $value=$this->repo->find($id);
         $ok=$value->getId();
         $sortie=$this->repoPromo->attenteOne($ok);
-        return $this->json($sortie,Response::HTTP_OK);
+        return $this->json($sortie,Response::HTTP_OK, [] ,['groups' => ['attenteOne:read']]);
     }
 
     /**
@@ -213,9 +214,8 @@ class PromoController extends AbstractController
      */
     public function principal()
     {
-        //dd("ok");
         $sortie=$this->repoPromo->allprincipal();
-        return $this->json($sortie,Response::HTTP_OK);
+        return $this->json($sortie,Response::HTTP_OK, [] ,['groups' => ['principal:read']]);
     }
 
     /**
@@ -237,8 +237,6 @@ class PromoController extends AbstractController
         $ok=$value->getId();
         //dd($ok);
         $sortie=$this->repoPromo->allprincipalOne($ok);
-        return $this->json($sortie,Response::HTTP_OK);
+        return $this->json($sortie,Response::HTTP_OK, [] ,['groups' => ['principal:read']]);
     }
-
-
 }

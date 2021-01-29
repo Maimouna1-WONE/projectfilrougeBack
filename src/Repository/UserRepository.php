@@ -64,4 +64,13 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         ;
     }
     */
+    public function getallusers()
+    {
+        return $this->createQueryBuilder('u')
+            ->select('u')
+            ->andWhere('u.archive = false')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
 }

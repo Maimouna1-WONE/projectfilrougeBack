@@ -55,6 +55,7 @@ class PromoRepository extends ServiceEntityRepository
             ->select('p,g,a')
             ->join('p.groupes', 'g')
             ->join('g.apprenants', 'a')
+            ->andWhere("g.type = 'principal'")
             ->andWhere('a.isConnected = false')
             ->getQuery()
             ->getResult()
@@ -69,6 +70,7 @@ class PromoRepository extends ServiceEntityRepository
             ->join('g.apprenants', 'a')
             ->andWhere('a.isConnected = false')
             ->andWhere('p.id = :value')
+            ->andWhere("g.type = 'principal'")
             ->andWhere('g.promotion = p.id')
             ->setParameter('value', $val)
             ->getQuery()
@@ -83,6 +85,7 @@ class PromoRepository extends ServiceEntityRepository
             ->join('p.groupes', 'g')
             ->join('g.apprenants', 'a')
             ->andWhere("g.type = 'principal'")
+            ->andWhere('g.promotion = p.id')
             ->getQuery()
             ->getResult();
     }
@@ -101,5 +104,18 @@ class PromoRepository extends ServiceEntityRepository
             ;
     }
 
-
+    public function promogroupe(int $val, int $val1)
+    {
+        return $this->createQueryBuilder('p')
+            ->select('p,g')
+            ->join('p.groupes', 'g')
+            ->andWhere('p.id = :value')
+            ->andWhere('g.id = :value1')
+            ->andWhere('g.promotion = p.id')
+            ->setParameter('value', $val)
+            ->setParameter('value1', $val1)
+            ->getQuery()
+            ->getResult()
+            ;
+    }
 }
