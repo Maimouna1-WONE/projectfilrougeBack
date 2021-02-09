@@ -108,7 +108,7 @@ class UserController extends AbstractController
      */
     public function search(){
         $user=($this->get("security.token_storage")->getToken())->getUser();
-        return $this->json($user,Response::HTTP_OK, [] ,['groups' => ['useritem:read']]);
+        return $this->json($user,Response::HTTP_OK, [] ,['groups' => ['user:read']]);
 
     }
 }

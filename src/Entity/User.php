@@ -170,8 +170,8 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="blob", nullable=true)
-     * @Groups ({"user:write"})
-     * @Groups ({"upuser:write","useritem:read"})
+     * @Groups ({"user:write","user:read"})
+     * @Groups ({"upuser:write"})
      */
     private $avatar;
 
