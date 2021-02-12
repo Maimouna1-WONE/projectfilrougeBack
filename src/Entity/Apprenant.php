@@ -62,13 +62,13 @@ class Apprenant extends User
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups ({"getalluser:read","apprenant:read","groupe:write","user:read","useritem:read"})
+     * @Groups ({"getalluser:read","apprenant:read","groupe:write","useritem:read"})
      */
     private $statut;
 
     /**
      * @ORM\ManyToOne(targetEntity=ProfilSortie::class, inversedBy="apprenants")
-     * @Groups ({"getalluser:read","apprenant:read","user:read","useritem:read"})
+     * @Groups ({"getalluser:read","apprenant:read","useritem:read"})
      */
     private $metier;
 

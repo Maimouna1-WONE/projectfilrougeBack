@@ -29,8 +29,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     "security"="is_granted('ROLE_ADMIN') or is_granted('ROLE_FORMATEUR') or is_granted('ROLE_CM') or is_granted('ROLE_APPRENANT')",
  *          "security_message"="Vous n'avez pas access à cette operation"
  *     },
- *              "add"={"method"="POST",
- *                      "path"="",
+ *              "postcmp"={"method"="POST",
+ *                      "route_name"="postcmp",
  *              "denormalization_context"={"groups"={"addniv:write"}}
  * }
  *     },

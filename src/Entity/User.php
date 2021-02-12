@@ -37,7 +37,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  *                 "add_user"={
  *                      "method"="POST",
  *                      "route_name"="user_add"
- *                   }, "get","search"={
+ *                   }, "get"={
+ *                      "method"="POST",
+ *                      "route_name"="get"
+ *                   },"search"={
  *                      "method"="GET",
  *                      "route_name"="search"
  *                   }
@@ -81,7 +84,6 @@ class User implements UserInterface
     /**
      * @var string The hashed password
      * @ORM\Column(type="string")
-     * @Groups ({"upuser:write"})
      */
     private $password;
 

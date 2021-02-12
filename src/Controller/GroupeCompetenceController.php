@@ -81,4 +81,59 @@ class GroupeCompetenceController extends AbstractController
        $this->manager->flush();
        return $this->json("ajout reussi", Response::HTTP_CREATED);
    }
+
+    /**
+     * @Route(
+     *     path="/api/admin/groupecompetences/{id}",
+     *     name="putgrp",
+     *     methods={"POST"},
+     *     defaults={
+     *          "__controller"="App\Controller\GroupeCompetenceController::putgrp",
+     *          "__api_resource_class"=GroupeCompetence::class,
+     *          "__api_item_operation_name"="putgrp"
+     *     }
+     * )
+     * @param int $id
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function putgrp(int $id, Request $request){
+        $object = $this->repo->find($id);
+        $grpcomp = $request->request->all();
+        //dd($grpcomp);
+        //$grpcomp=json_decode($request->getContent(), true);
+        $compobj = $object->getCompetence();
+        if($grpcomp['competence']) {
+            $tab =$grpcomp['competence'];
+            foreach ($tab as $value) {
+                $c = (integer)$value;
+                unset($value);
+                $comp = $this->repop->find($c);
+                $tabokk[] = $comp;
+            }
+        }
+        foreach ($grpcomp as $key=>$value){
+            if ($key !== "competence"){
+                $ok = "set" . ucfirst($key);
+                $object->$ok($value);
+            }
+        }
+        foreach ($tabokk as $keyok=>$valueok){
+            foreach ($compobj as $k => $v){
+                if (in_array($v, $tabokk, true) === false){
+                    $object->removeCompetence($v);
+                }
+                $object->addCompetence($valueok);
+            }
+        }
+        $errors = $this->validator->validate($object);
+        if (count($errors)){
+            $errors = $this->serializer->serialize($errors,"json");
+            return new JsonResponse($errors,Response::HTTP_BAD_REQUEST,[],true);
+        }
+        $this->manager->persist($object);
+        $this->manager->flush();
+        //dd($object->getCompetence());
+        return $this->json('modification reussie', Response::HTTP_OK);
+    }
 }

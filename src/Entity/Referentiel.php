@@ -43,8 +43,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  *                      "route_name"="refgp",
  *     "normalization_context"={"groups"={"refgrp:read"}}
  *             },
- *              "put"={"method"="PUT",
- *                      "path"="/{id}"},
+ *              "put"={"method"="POST",
+ *                      "route_name"="put",
+ *     "normalization_context"={"groups"={"putref:write"}}},
  *     "delete"={"method"="DELETE",
  *                      "path"="/{id}"}
  *     }
@@ -64,39 +65,39 @@ class Referentiel
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message = "le libelle est obligatoire")
-     * @Groups({"getRef:read","refgrp:read","promo:read","referentiel:read","referentiel:write","promo:read","getref:read","compref:read","getbpromo:read","principal:read","attenteOne:read"})
+     * @Groups({"getRef:read","refgrp:read","putref:write","promo:read","referentiel:read","referentiel:write","promo:read","getref:read","compref:read","getbpromo:read","principal:read","attenteOne:read"})
      */
     private $libelle;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message = "la presentation est obligatoire")
-     * @Groups({"getRef:read","referentiel:read","referentiel:write","promo:read","getref:read"})
+     * @Groups({"getRef:read","putref:write","referentiel:read","referentiel:write","promo:read","getref:read"})
      */
     private $presentation;
 
     /**
      * @ORM\ManyToMany(targetEntity=GroupeCompetence::class, inversedBy="referentiels", cascade={"persist"})
      * @ApiSubresource ()
-     * @Groups ({"getRef:read","refgrp:read","ref:read","referentiel:read","promo:read","getref:read","compref:read","referentiel:write"})
+     * @Groups ({"getRef:read","putref:write","refgrp:read","ref:read","referentiel:read","promo:read","getref:read","compref:read","referentiel:write"})
      */
     private $groupeCompetence;
 
     /**
      * @ORM\Column(type="blob", nullable=true)
-     * @Groups ({"getref:read","referentiel:write"})
+     * @Groups ({"getref:read","putref:write","referentiel:write"})
      */
     private $programme;
 
     /**
      * @ORM\Column(type="string", length=255,nullable=true)
-     * @Groups ({"getRef:read","referentiel:write","getref:read"})
+     * @Groups ({"getRef:read","putref:write","referentiel:write","getref:read"})
      */
     private $critereEvaluation;
 
     /**
      * @ORM\Column(type="string", length=255,nullable=true)
-     * @Groups ({"getRef:read","referentiel:write","getref:read"})
+     * @Groups ({"getRef:read","putref:write","referentiel:write","getref:read"})
      */
     private $critereAdmission;
 

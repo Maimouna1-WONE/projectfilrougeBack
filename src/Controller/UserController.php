@@ -34,6 +34,26 @@ class UserController extends AbstractController
         $this->validator=$validator;
         $this->serializer=$serializer;
     }
+
+    /**
+     * @Route(
+     *     path="/api/admin/users",
+     *     name="get",
+     *     methods={"GET"},
+     *     defaults={
+     *          "__controller"="App\Controller\UserController::getall",
+     *          "__api_resource_class"=User::class,
+     *          "__api_collection_operation_name"="get"
+     *     }
+     * )
+     */
+    public function getall()
+    {
+        $user=$this->repo->trouver();
+        //dd($user);
+        return $this->json($user,Response::HTTP_OK, [] ,['groups' => ['user:read']]);
+    }
+
     /**
      * @Route(
      *     path="/api/admin/users",
@@ -77,12 +97,12 @@ class UserController extends AbstractController
         $data = $this->service->UpdateUser($request, 'avatar');
         foreach ($data as $key=>$value){
             $ok="set".ucfirst($key);
-            if ($key === "password"){
+            /*if ($key === "password"){
                 $object->$ok($this->encoder->encodePassword($object,$value));
             }
-            else {
+            else {*/
                 $object->$ok($value);
-            }
+            //}
         }
         $errors = $this->validator->validate($object);
         if (count($errors)){
