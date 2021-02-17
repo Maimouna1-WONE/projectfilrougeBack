@@ -239,4 +239,22 @@ class PromoController extends AbstractController
         $sortie=$this->repoPromo->allprincipalOne($ok);
         return $this->json($sortie,Response::HTTP_OK, [] ,['groups' => ['principal:read']]);
     }
+
+    /**
+     * @Route(
+     *     path="/api/admin/promos/encours",
+     *     name="promoencours",
+     *     methods={"GET"},
+     *     defaults={
+     *          "__controller"="App\Controller\PromoController::promoencours",
+     *          "__api_resource_class"=Promo::class,
+     *          "__api_collection_operation_name"="promoencours"
+     *     }
+     * )
+     */
+    public function promoencours(){
+        $sortie=$this->repoPromo->promoencours(new \DateTime);
+        //dd($sortie);
+        return $this->json($sortie,Response::HTTP_OK, [] ,['groups' => ['getitempromo:read']]);
+    }
 }

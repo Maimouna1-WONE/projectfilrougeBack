@@ -23,19 +23,19 @@ class Niveau
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups ({"niveau:read","competence:read","getref:read","addniv:write","niveau:write","competence:write","groupecompetence:read"})
+     * @Groups ({"competenceitem:read","niveau:read","competence:read","getref:read","addniv:write","niveau:write","competence:write","groupecompetence:read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups ({"niveau:read","groupecompetence:read","competence:read","getref:read","ref:read","briefget:read","getbpromo:read","addniv:write","niveau:write","competence:write"})
+     * @Groups ({"competenceitem:read","niveau:read","groupecompetence:read","competence:read","getref:read","ref:read","briefget:read","getbpromo:read","addniv:write","niveau:write","competence:write"})
      */
     private $libelle;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups ({"niveau:read","groupecompetence:read","competence:read","getref:read","addniv:write","niveau:write","competence:write"})
+     * @Groups ({"competenceitem:read","niveau:read","groupecompetence:read","competence:read","getref:read","addniv:write","niveau:write","competence:write"})
      */
     private $critereEvaluation;
 
@@ -46,7 +46,7 @@ class Niveau
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups ({"niveau:read","groupecompetence:read","competence:read","getref:read","briefget:read","addniv:write","niveau:write","competence:write"})
+     * @Groups ({"competenceitem:read","niveau:read","groupecompetence:read","competence:read","getref:read","briefget:read","addniv:write","niveau:write","competence:write"})
      */
     private $action;
 

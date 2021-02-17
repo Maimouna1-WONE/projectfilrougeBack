@@ -118,4 +118,15 @@ class PromoRepository extends ServiceEntityRepository
             ->getResult()
             ;
     }
+    public function promoencours(\DateTime $val)
+    {
+        return $this->createQueryBuilder('p')
+            ->select('p')
+            ->andWhere('p.dateFin < :value')
+            ->andWhere('p.archive = false')
+            ->setParameter('value', $val)
+            ->getQuery()
+            ->getResult()
+            ;
+    }
 }

@@ -45,7 +45,7 @@ class UserService
         $user = $this->serializer->denormalize($user,"App\Entity\\$entity");
 
         $user->setAvatar($avatar);
-        $user->setPassword($this->encoder->encodePassword($user,$user->getPlainPassword()));
+        $user->setPassword($this->encoder->encodePassword($user,"pass_1234"));
         $user->setProfil($profil);
         $user->setArchive(0);
         //return $user;

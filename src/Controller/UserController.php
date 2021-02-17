@@ -49,7 +49,9 @@ class UserController extends AbstractController
      */
     public function getall()
     {
-        $user=$this->repo->trouver();
+        $userconnecte=($this->get("security.token_storage")->getToken())->getUser();
+        //dd($userconnecte->getId());
+        $user=$this->repo->trouver((int)$userconnecte->getId());
         //dd($user);
         return $this->json($user,Response::HTTP_OK, [] ,['groups' => ['user:read']]);
     }
@@ -89,7 +91,6 @@ class UserController extends AbstractController
      * )
      * @param Request $request
      * @param int $id
-     * @return JsonResponse
      */
     public function modifier(Request $request, int $id)
     {
@@ -97,12 +98,13 @@ class UserController extends AbstractController
         $data = $this->service->UpdateUser($request, 'avatar');
         foreach ($data as $key=>$value){
             $ok="set".ucfirst($key);
-            /*if ($key === "password"){
-                $object->$ok($this->encoder->encodePassword($object,$value));
+            if ($key === "password"){
+                //dd((string)substr($data[$key],0,-6));
+                $object->$ok($this->encoder->encodePassword($object,(string)substr($data[$key],0,-6)));
             }
-            else {*/
+            else {
                 $object->$ok($value);
-            //}
+            }
         }
         $errors = $this->validator->validate($object);
         if (count($errors)){
@@ -112,7 +114,7 @@ class UserController extends AbstractController
         $this->manager->persist($object);
         $this->manager->flush();
         //dd($object);
-        return new JsonResponse("modification reussie",Response::HTTP_CREATED,[],true);
+        return $this->json("modification reussie",201);
     }
     /**
      * @Route(
@@ -122,13 +124,13 @@ class UserController extends AbstractController
      *     defaults={
      *          "__controller"="App\Controller\UserController::search",
      *          "__api_resource_class"=User::class,
-     *          "__api_collection_operation_name"="search"
+     *          "__api_item_operation_name"="search"
      *     }
      * )
      */
     public function search(){
         $user=($this->get("security.token_storage")->getToken())->getUser();
-        return $this->json($user,Response::HTTP_OK, [] ,['groups' => ['user:read']]);
-
+        return $this->json($user,Response::HTTP_OK, [] ,['groups' => ['getuserconnecte:read']]);
     }
+
 }

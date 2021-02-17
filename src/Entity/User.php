@@ -40,16 +40,23 @@ use Symfony\Component\Validator\Constraints as Assert;
  *                   }, "get"={
  *                      "method"="POST",
  *                      "route_name"="get"
- *                   },"search"={
- *                      "method"="GET",
- *                      "route_name"="search"
  *                   }
  *     },
  *     itemOperations={
+ *                  "search"={
+ *                      "method"="GET",
+ *                      "route_name"="search",
+ *     "normalization_context"={"groups"={"getuserconnecte:read"}}
+ *                   },
  *              "getitem"={
  *                      "method"="GET",
  *                      "path"="/users/{id}",
  *                      "normalization_context"={"groups"={"useritem:read"}}
+ *                },
+ *              "qrcode"={
+ *                      "method"="GET",
+ *                      "path"="/users/{id}/qrcode",
+ *                      "normalization_context"={"groups"={"qrcode:read"}}
  *                },
  *              "update_user"={
  *                      "method"="PUT",
@@ -68,14 +75,14 @@ class User implements UserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups ({"principal:read","getalluser:read","user:read","useritem:read","apprenant:read","promo:write","promo:read","groupe:write","profil:read"})
+     * @Groups ({"qrcode:read","getuserconnecte:read","principal:read","getalluser:read","user:read","useritem:read","apprenant:read","promo:write","promo:read","groupe:write","profil:read"})
      */
     protected $id;
 
     /**
      * @ORM\Column(type="string", length=180,unique=true)
      * @Assert\NotBlank(message = "Le login ne peut etre vide")
-     * @Groups ({"getalluser:read","upuser:write","promo:write","user:read","user:write","profil:read","apprenant:read","formateur:read","useritem:read"})
+     * @Groups ({"qrcode:read","getuserconnecte:read","getalluser:read","upuser:write","promo:write","user:read","user:write","profil:read","apprenant:read","formateur:read","useritem:read"})
      */
     private $login;
 
@@ -84,13 +91,14 @@ class User implements UserInterface
     /**
      * @var string The hashed password
      * @ORM\Column(type="string")
+     * @Groups ({"password:write"})
      */
     private $password;
 
     /**
      * @ORM\ManyToOne(targetEntity=Profil::class, inversedBy="users")
      * @ApiSubresource()
-     * @Groups ({"getalluser:read","user:read", "user:write","useritem:read"})
+     * @Groups ({"qrcode:read","getuserconnecte:read","getalluser:read","user:read", "user:write","useritem:read"})
      */
     private $profil;
 
@@ -113,7 +121,7 @@ class User implements UserInterface
      * )
      * @Groups ({"promo:write","user:read","groupe:write","user:write","profil:read","apprenant:read","formateur:read","profilssortie:read","promo:read","groupe:read","getbpromo:read"})
      * @Groups ({"comm:read","useritem:read"})
-     * @Groups ({"getalluser:read","upuser:write","principal:read","getform:read"})
+     * @Groups ({"qrcode:read","getuserconnecte:read","getalluser:read","upuser:write","principal:read","getform:read"})
      */
     private $nom;
 
@@ -126,7 +134,7 @@ class User implements UserInterface
      * )
      * @Groups ({"promo:write","user:read","groupe:write","user:write","profil:read","apprenant:read","formateur:read","profilssortie:read","promo:read","groupe:read","getbpromo:read"})
      * @Groups ({"comm:read","useritem:read"})
-     * @Groups ({"getalluser:read","upuser:write","principal:read","getform:read"})
+     * @Groups ({"qrcode:read","getuserconnecte:read","getalluser:read","upuser:write","principal:read","getform:read"})
      */
     private $prenom;
 
@@ -138,7 +146,7 @@ class User implements UserInterface
      *     message="Seuls les operateurs Tigo Expresso et Orange sont permis"
      * )
      * @Groups ({"promo:write","user:read","groupe:write","user:write","profil:read","apprenant:read","formateur:read"})
-     * @Groups ({"getalluser:read","upuser:write","useritem:read"})
+     * @Groups ({"qrcode:read","getuserconnecte:read","getalluser:read","upuser:write","useritem:read"})
      */
     private $telephone;
 
@@ -146,7 +154,7 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message = "Donner l'adresse email")
      * @Groups ({"promo:write","user:read","user:write","profil:read","apprenant:read","formateur:read"})
-     * @Groups ({"getalluser:read","upuser:write","useritem:read","attenteOne:read"})
+     * @Groups ({"qrcode:read","getuserconnecte:read","getalluser:read","upuser:write","useritem:read","attenteOne:read"})
      */
     private $email;
 
@@ -154,7 +162,7 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message = "donner votre adresse")
      * @Groups ({"upuser:write","useritem:read"})
-     * @Groups ({"getalluser:read","promo:write","user:read","user:write","profil:read","apprenant:read","formateur:read"})
+     * @Groups ({"qrcode:read","getuserconnecte:read","getalluser:read","promo:write","user:read","user:write","profil:read","apprenant:read","formateur:read"})
      */
     private $adresse;
 
@@ -166,14 +174,14 @@ class User implements UserInterface
      *     message="Mets F comme Feminin et M comme Masculin"
      * )
      * @Groups ({"upuser:write","useritem:read"})
-     * @Groups ({"getalluser:read","promo:write","user:read","user:write","profil:read","apprenant:read"})
+     * @Groups ({"qrcode:read","getuserconnecte:read","getalluser:read","promo:write","user:read","user:write","profil:read","apprenant:read"})
      */
     private $genre;
 
     /**
      * @ORM\Column(type="blob", nullable=true)
      * @Groups ({"user:write","user:read"})
-     * @Groups ({"upuser:write"})
+     * @Groups ({"getuserconnecte:read","upuser:write","useritem:read"})
      */
     private $avatar;
 

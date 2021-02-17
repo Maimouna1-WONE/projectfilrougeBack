@@ -48,19 +48,19 @@ class Groupe
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups ({"promo:write","groupe:write","promo:read","principal:read"})
+     * @Groups ({"promo:write","groupe:write","getitempromo:read","promo:read","principal:read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups ({"groupe:read","groupe:write","promo:read","getbpromo:read","promo:write","principal:read"})
+     * @Groups ({"groupe:read","getitempromo:read","groupe:write","promo:read","getbpromo:read","promo:write","principal:read"})
      */
     private $libelle;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups ({"groupe:read","promo:write","groupe:write"})
+     * @Groups ({"groupe:read","promo:write","getitempromo:read","groupe:write"})
      */
     private $periode;
 

@@ -50,20 +50,20 @@ class GroupeCompetence
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups ({"addniv:write","getRef:read","groupecompetence:write","groupecompetence:read","getref:read"})
+     * @Groups ({"competenceitem:read","addniv:write","getRef:read","groupecompetence:write","groupecompetence:read","getref:read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups ({"addniv:write","getRef:read","refgrp:read","groupecompetence:read","ref:read","referentiel:read","promo:read","getref:read","compref:read","groupecompetence:write"})
+     * @Groups ({"competenceitem:read","addniv:write","getRef:read","refgrp:read","groupecompetence:read","ref:read","referentiel:read","promo:read","getref:read","compref:read","groupecompetence:write"})
      * @Assert\NotBlank(message = "Le libelle est obligatoire")
      */
     private $libelle;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups ({"addniv:write","getRef:read","refgrp:read","groupecompetence:read","ref:read","referentiel:read","promo:read","getref:read","groupecompetence:write"})
+     * @Groups ({"competenceitem:read","addniv:write","getRef:read","refgrp:read","groupecompetence:read","ref:read","referentiel:read","promo:read","getref:read","groupecompetence:write"})
      */
     private $description;
 

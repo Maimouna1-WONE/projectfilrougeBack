@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controller;
+use App\Entity\Niveau;
 use App\Entity\User;
 use App\Entity\Competence;
 use App\Repository\CompetenceRepository;
@@ -70,5 +71,81 @@ class CompetenceController extends AbstractController
         $this->manager->persist($competence);
         $this->manager->flush();
         return $this->json("ajout reussi", Response::HTTP_CREATED);
+    }
+
+    /**
+     * @Route(
+     *     path="/api/admin/competences/{id}",
+     *     name="putcmp",
+     *     methods={"PUT"},
+     *     defaults={
+     *          "__controller"="App\Controller\CompetenceController::putcmp",
+     *          "__api_resource_class"=Competence::class,
+     *          "__api_collection_operation_name"="putcmp"
+     *     }
+     * )
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function putcmp(Request $request, int $id){
+        $object = $this->repo->find($id);
+        $comp = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        //dd($comp['libelle']);
+        $grpcompobj = $object->getGroupeCompetences();
+        if($comp['groupeCompetences']) {
+            $tab =$comp['groupeCompetences'];
+            foreach ($tab as $value) {
+                $g = (integer)$value;
+                unset($value);
+                $grpcomp = $this->repog->find($g);
+                $tabokk[] = $grpcomp;
+            }
+        }
+        foreach ($tabokk as $keyok=>$valueok){
+            foreach ($grpcompobj as $k => $v){
+                if (in_array($v, $tabokk, true) === false){
+                    $object->removeGroupeCompetence($v);
+                }
+                $object->addGroupeCompetence($valueok);
+            }
+        }
+        $nivo= $object->getNiveau();
+        foreach ($comp as $key=>$value){
+            //dd($key);
+            if ($key !== "groupeCompetences" && $key !== "niveau"){
+                $ok = "set" . ucfirst($key);
+                $object->$ok($value);
+            }
+            if ($key === "niveau") {
+                //foreach ($nivo as $n) {
+                $i=0;
+                    foreach ($comp['niveau'] as $val) {
+                        foreach ($val as $cle => $valeur) {
+                            //dd($valeur);
+                            $okk = "set" . ucfirst($cle);
+                            //dd($okk);
+                            $nivo[$i]->$okk($valeur);
+                            $errors = $this->validator->validate($nivo[$i]);
+                            if (count($errors)) {
+                                $errors = $this->serializer->serialize($errors, "json");
+                                return new JsonResponse($errors, Response::HTTP_BAD_REQUEST, [], true);
+                            }
+                            $object->addNiveau($nivo[$i]);
+                            //$this->manager->persist($object);
+                        }
+                        $i++;
+                    }
+                //}
+            }
+        }
+        //dd($object);
+        $errors = $this->validator->validate($object);
+        if (count($errors)){
+            $errors = $this->serializer->serialize($errors,"json");
+            return new JsonResponse($errors,Response::HTTP_BAD_REQUEST,[],true);
+        }
+        $this->manager->persist($object);
+        $this->manager->flush();
+        return $this->json("modification reussi", Response::HTTP_CREATED);
     }
 }

@@ -13,8 +13,7 @@ class JwtCreatedSubscriber{
         // On enrichit le data du token
         $data = $event->getData();
 
-        /*$data['id'] = $user->getId();
-        $data['email'] =  $user->getEmail();*/
+        /*$data['id'] = $user->getId();*/
         $data['archive'] =  $user->getArchive();
 
         // Revoie des donnees du Token

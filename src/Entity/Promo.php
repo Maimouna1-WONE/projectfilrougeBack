@@ -59,11 +59,13 @@ use Symfony\Component\Validator\Constraints as Assert;
  *                 "attente"={
  *                      "method"="GET",
  *                      "route_name"="attente"
- *     }
+ *     }, "promoencours"={"method"="GET",
+ *                      "route_name"="promoencours"}
  *     },
  *     itemOperations={
  *              "get"={"method"="GET",
  *                      "path"="/admin/promos/{id}",
+ *     "normalization_context"={"groups"={"getitempromo:read"}},
  *     "security"="is_granted('ROLE_ADMIN') or is_granted('ROLE_FORMATEUR') or is_granted('ROLE_CM')",
  *          "security_message"="Vous n'avez pas access à cette operation"},
  *     "getform"={"method"="GET",
@@ -104,20 +106,20 @@ class Promo
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups ({"promo:write", "promo:read","principal:read","getform:read"})
+     * @Groups ({"promo:write", "promo:read","principal:read","getform:read","getitempromo:read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message = "Le libelle ne peut etre vide")
-     * @Groups ({"promo:write","promo:read","compref:read","getbpromo:read","bripro:read"})
+     * @Groups ({"promo:write","getitempromo:read","promo:read","compref:read","getbpromo:read","bripro:read"})
      */
     private $libelle;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups ({"promo:write","promo:read"})
+     * @Groups ({"promo:write","getitempromo:read","promo:read"})
      */
     private $lieu;
 
@@ -129,37 +131,37 @@ class Promo
 
     /**
      * @ORM\Column(type="blob", nullable=true)
-     * @Groups ({"promo:read"})
+     * @Groups ({"promo:read","getitempromo:read"})
      */
     private $avatar;
 
     /**
      * @ORM\Column(type="string", length=255, options={"default":"francais"})
-     * @Groups ({"promo:write","promo:read"})
+     * @Groups ({"promo:write","promo:read","getitempromo:read"})
      */
     private $langue;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups ({"promo:write","promo:read"})
+     * @Groups ({"promo:write","promo:read","getitempromo:read"})
      */
     private $description;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups ({"promo:write","promo:read"})
+     * @Groups ({"promo:write","promo:read","getitempromo:read"})
      */
     private $referenceAgate;
 
     /**
      * @ORM\Column(type="date", nullable=true)
-     * @Groups ({"promo:write","promo:read"})
+     * @Groups ({"promo:write","promo:read","getitempromo:read"})
      */
     private $dateDebut;
 
     /**
      * @ORM\Column(type="date", nullable=true)
-     * @Groups ({"promo:write","promo:read"})
+     * @Groups ({"promo:write","promo:read","getitempromo:read"})
      */
     private $dateFin;
 
@@ -178,7 +180,7 @@ class Promo
     /**
      * @ORM\OneToMany(targetEntity=Groupe::class, mappedBy="promotion")
      * @ApiSubresource ()
-     * @Groups ({"promo:write","promo:read","groupe:read","getbpromo:read","principal:read","attenteOne:read"})
+     * @Groups ({"promo:write","getitempromo:read","promo:read","groupe:read","getbpromo:read","principal:read","attenteOne:read"})
      */
     private $groupes;
 

@@ -38,10 +38,11 @@ use Symfony\Component\Validator\Constraints as Assert;
  *              "get"={"method"="GET",
  *                      "path"="/{id}",
  *     "security"="is_granted('ROLE_ADMIN') or is_granted('ROLE_FORMATEUR') or is_granted('ROLE_CM')",
- *          "security_message"="Vous n'avez pas access à cette operation"},
- *              "put"={
+ *          "security_message"="Vous n'avez pas access à cette operation",
+ *     "normalization_context"={"groups"={"competenceitem:read"}}},
+ *              "putcmp"={
  *                      "method"="PUT",
- *                      "path"="/{id}"},
+ *                      "route_name"="putcmp"},
  *              "delete"={"method"="DELETE",
  *                      "path"="/{id}"}
  *     }
@@ -54,21 +55,21 @@ class Competence
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"competence:write","competence:read","groupecompetence:read","referentiel:read","promo:read","getref:read","ref:read","compref:read","addniv:write","groupecompetence:write"})
+     * @Groups({"competenceitem:read","competence:write","competence:read","groupecompetence:read","referentiel:read","promo:read","getref:read","ref:read","compref:read","addniv:write","groupecompetence:write"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message = "le libelle est obligatoire")
-     * @Groups({"competence:write","competence:read","groupecompetence:read","referentiel:read","promo:read","getref:read","ref:read","compref:read","addniv:write","groupecompetence:write"})
+     * @Groups({"competenceitem:read","competence:write","competence:read","groupecompetence:read","referentiel:read","promo:read","getref:read","ref:read","compref:read","addniv:write","groupecompetence:write"})
      */
     private $libelle;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message = "met la description")
-     * @Groups({"competence:write","competence:read","groupecompetence:read","referentiel:read","promo:read","getref:read","ref:read","addniv:write","groupecompetence:write"})
+     * @Groups({"competenceitem:read","competence:write","competence:read","groupecompetence:read","referentiel:read","promo:read","getref:read","ref:read","addniv:write","groupecompetence:write"})
      */
     private $description;
 
@@ -79,7 +80,7 @@ class Competence
 
     /**
      * @ORM\ManyToMany(targetEntity=GroupeCompetence::class, mappedBy="competence")
-     * @Groups ({"addniv:write"})
+     * @Groups ({"competenceitem:read","addniv:write"})
      */
     private $groupeCompetences;
 
@@ -92,7 +93,7 @@ class Competence
      *      minMessage = "You must specify at least one niveau",
      *      maxMessage = "You cannot specify more than {{ limit }} niveaux"
      * )
-     * @Groups ({"competence:write","competence:read","getref:read","addniv:write","groupecompetence:read"})
+     * @Groups ({"competenceitem:read","competence:write","competence:read","getref:read","addniv:write","groupecompetence:read"})
      */
     private $niveau;
 

@@ -73,14 +73,17 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getResult()
             ;
     }
-    public function trouver()
+    public function trouver(int $value)
     {
         return $this->createQueryBuilder('u')
             ->select('u')
             ->andWhere('u.archive = false')
             ->andWhere('u.profil != 1')
+            ->andWhere('u.id != :value')
+            ->setParameter('value', $value)
             ->getQuery()
             ->getResult()
             ;
     }
+
 }
