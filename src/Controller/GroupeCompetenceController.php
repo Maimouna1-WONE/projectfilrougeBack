@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Controller;
+use App\Entity\Competence;
+use App\Entity\Niveau;
 use App\Entity\User;
 use App\Entity\GroupeCompetence;
 use App\Repository\CompetenceRepository;
@@ -43,6 +45,7 @@ class GroupeCompetenceController extends AbstractController
         $this->validator=$validator;
         $this->serializer=$serializer;
     }
+
     /**
      * @Route(
      *     path="/api/admin/groupecompetences",
@@ -54,24 +57,53 @@ class GroupeCompetenceController extends AbstractController
      *          "__api_collection_operation_name"="postgrp"
      *     }
      * )
+     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
      */
    public function addgrp(Request $request){
        $grpcomp = json_decode($request->getContent(), true);
        //dd($grpcomp);
-       foreach ($grpcomp["competence"] as $key => $value){
-           $idComp = (int)$value;
-           unset($value);
-           $comp = $this->repop->find($idComp);
-           $tab[] = $comp;
-       }
-       unset($grpcomp["competence"]);
-       $grp = $this->serializer->denormalize($grpcomp, GroupeCompetence::class);
+       $grp = new GroupeCompetence();
+       //dd($grp);
        $grp->setLibelle($grpcomp["libelle"]);
        $grp->setDescription($grpcomp["description"]);
-       foreach ($tab as $val){
-           $grp->addCompetence($val);
-       }
        //dd($grp);
+       foreach ($grpcomp["competence"] as $key => $value){
+           if(is_numeric($value)){
+               $idComp = (int)$value;
+               unset($value);
+               $comp = $this->repop->find($idComp);
+               $this->manager->persist($comp);
+               //dd($comp);
+           }
+           else{
+               //dd($value);
+               $comp = $this->repop->find($value['id']);
+               /*$comp = new Competence();
+               $comp->setLibelle($value['libelle']);
+               $comp->setDescription($value['description']);
+               foreach ($value['niveau'] as $k => $v){
+                   //dd($v);
+                   $niv = new Niveau();
+                   $niv->setLibelle($v['libelle']);
+                   $niv->setCritereEvaluation($v['critereEvaluation']);
+                   $niv->setAction($v['action']);
+                   $comp->addNiveau($niv);
+                   $this->manager->persist($niv);
+               }
+               //dd($comp);
+               if ($value['groupeCompetences'] !== []){
+                   foreach ($value['groupeCompetences'] as $g => $grpc){
+                       $idgrpComp = (int)$grpc;
+                       unset($grpc);
+                       $grpcomp = $this->repo->find($idgrpComp);
+                       $comp->addGroupeCompetence($grpcomp);
+                   }
+               }
+               $this->manager->persist($comp);*/
+           }
+           $grp->addCompetence($comp);
+       }
+       //dd($grp->getCompetence());
        $errors = $this->validator->validate($grp);
        if (count($errors)){
            $errors = $this->serializer->serialize($errors,"json");

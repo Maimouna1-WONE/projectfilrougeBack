@@ -70,7 +70,7 @@ class CompetenceController extends AbstractController
         }
         $this->manager->persist($competence);
         $this->manager->flush();
-        return $this->json("ajout reussi", Response::HTTP_CREATED);
+        return $this->json($competence, Response::HTTP_CREATED);
     }
 
     /**
